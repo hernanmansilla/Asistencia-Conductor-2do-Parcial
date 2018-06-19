@@ -51,6 +51,7 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
     public interface OnItemClickListener
     {
         void onItemClick(int position);
+        void onDeleteClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener)
@@ -97,6 +98,22 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
                         if(position != RecyclerView.NO_POSITION)
                         {
                             listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
+
+            imagen_delete.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    if(listener != null)
+                    {
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION)
+                        {
+                            listener.onDeleteClick(position);
                         }
                     }
                 }

@@ -49,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
                // ListaUsuariosPrincipal.get(position);
                 Toast.makeText(MainActivity.this, "Pulsado el elemento " + position, Toast.LENGTH_SHORT).show();
             }
+            @Override
+            public void onDeleteClick(int position)
+            {
+                // ListaUsuariosPrincipal.get(position);
+                Toast.makeText(MainActivity.this, "Borre el elemento " + position, Toast.LENGTH_SHORT).show();
+            }
         });
 
         recyclerUsuarios.setAdapter(adapter);
