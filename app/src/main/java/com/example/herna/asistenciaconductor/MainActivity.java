@@ -4,9 +4,12 @@ package com.example.herna.asistenciaconductor;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -16,7 +19,8 @@ public class MainActivity extends AppCompatActivity {
    RecyclerView recyclerUsuarios;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -27,7 +31,20 @@ public class MainActivity extends AppCompatActivity {
         LlenarUsuarios();
 
         AdaptadorRecyclerViewPrincipal adapter = new AdaptadorRecyclerViewPrincipal(ListaUsuariosPrincipal);
+
+        adapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v)
+            {
+               // Log.i("DemoRecView", "Pulsado el elemento " + recyclerUsuarios.getChildPosition(v));
+                Toast.makeText(MainActivity.this, "Pulsado el elemento " + recyclerUsuarios.getChildPosition(v), Toast.LENGTH_SHORT).show();
+            }
+        });
+
         recyclerUsuarios.setAdapter(adapter);
+
+        // Linea de separacion entre items de la lista
+        recyclerUsuarios.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
     private void LlenarUsuarios()

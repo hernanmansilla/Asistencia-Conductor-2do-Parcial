@@ -1,22 +1,20 @@
 package com.example.herna.asistenciaconductor;
 
-import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<AdaptadorRecyclerViewPrincipal.ViewHolderPrincipal>
+public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<AdaptadorRecyclerViewPrincipal.ViewHolderPrincipal> implements View.OnClickListener
 {
     ArrayList<DatosRecyclerViewPrincipal> ListaUsuariosPrincipal;
+    private View.OnClickListener listener;
 
     public AdaptadorRecyclerViewPrincipal(ArrayList<DatosRecyclerViewPrincipal> ListaUsuariosPrincipal )
     {
@@ -27,6 +25,9 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
     public ViewHolderPrincipal onCreateViewHolder(ViewGroup parent, int viewType)
     {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_listitem, parent, false);
+
+        view.setOnClickListener(this);
+
         ViewHolderPrincipal holder = new ViewHolderPrincipal(view);
         return holder;
     }
@@ -40,8 +41,21 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
     }
 
     @Override
-    public int getItemCount() {
+    public int getItemCount()
+    {
         return ListaUsuariosPrincipal.size();
+    }
+
+    public void setOnClickListener(View.OnClickListener listener)
+    {
+        this.listener = listener;
+    }
+
+    @Override
+    public void onClick(View view)
+    {
+        if(listener != null)
+            listener.onClick(view);
     }
 
     public class ViewHolderPrincipal extends RecyclerView.ViewHolder
