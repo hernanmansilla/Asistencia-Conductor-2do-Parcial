@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-   ArrayList<DatosRecyclerViewPrincipal> ListaUsuariosPrincipal;
-   RecyclerView recyclerUsuarios;
+   private ArrayList<DatosRecyclerViewPrincipal> ListaUsuariosPrincipal;
+   private RecyclerView recyclerUsuarios;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -32,12 +32,22 @@ public class MainActivity extends AppCompatActivity {
 
         AdaptadorRecyclerViewPrincipal adapter = new AdaptadorRecyclerViewPrincipal(ListaUsuariosPrincipal);
 
-        adapter.setOnClickListener(new View.OnClickListener() {
+   /*    adapter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
                // Log.i("DemoRecView", "Pulsado el elemento " + recyclerUsuarios.getChildPosition(v));
                 Toast.makeText(MainActivity.this, "Pulsado el elemento " + recyclerUsuarios.getChildPosition(v), Toast.LENGTH_SHORT).show();
+            }
+        });
+*/
+        adapter.setOnItemClickListener(new AdaptadorRecyclerViewPrincipal.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(int position)
+            {
+               // ListaUsuariosPrincipal.get(position);
+                Toast.makeText(MainActivity.this, "Pulsado el elemento " + position, Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -5,6 +5,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
 {
     ArrayList<DatosRecyclerViewPrincipal> ListaUsuariosPrincipal;
     private View.OnClickListener listener;
+    private OnItemClickListener itemListener;
 
     public AdaptadorRecyclerViewPrincipal(ArrayList<DatosRecyclerViewPrincipal> ListaUsuariosPrincipal )
     {
@@ -28,7 +30,7 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
 
         view.setOnClickListener(this);
 
-        ViewHolderPrincipal holder = new ViewHolderPrincipal(view);
+        ViewHolderPrincipal holder = new ViewHolderPrincipal(view,itemListener);
         return holder;
     }
 
@@ -44,6 +46,16 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
     public int getItemCount()
     {
         return ListaUsuariosPrincipal.size();
+    }
+
+    public interface OnItemClickListener
+    {
+        void onItemClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener)
+    {
+        this.itemListener = listener;
     }
 
     public void setOnClickListener(View.OnClickListener listener)
@@ -63,15 +75,34 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
         CircleImageView imagen;
         TextView imageName;
         TextView imageDesc;
+        ImageView imagen_delete;
         RelativeLayout parentLayout;
 
-        public ViewHolderPrincipal(View itemView)
+        public ViewHolderPrincipal(View itemView, final OnItemClickListener listener)
         {
             super(itemView);
             imagen = itemView.findViewById(R.id.imagen);
             imageName = itemView.findViewById(R.id.imagen_nombre);
             imageDesc = itemView.findViewById(R.id.imagen_descripcion);
+            imagen_delete = itemView.findViewById(R.id.imagen_delete);
             parentLayout = itemView.findViewById(R.id.parent_layout);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    if(listener != null)
+                    {
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION)
+                        {
+                            listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
+
+
         }
     }
 }
