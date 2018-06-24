@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity
    BluetoothSocket mSocket = null;
    BluetoothDevice mDevice = null;
    BluetoothAdapter mBluetoothAdapter = null;
+   ConnectedThread connectedThread;
 
    UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
@@ -87,6 +89,10 @@ public class MainActivity extends AppCompatActivity
             public void onDeleteClick(int position)
             {
                 // ListaUsuariosPrincipal.get(position);
+                connectedThread.enviar_string("hola");
+
+         //       connectedThread.run();
+
                 Toast.makeText(MainActivity.this, "Borre el elemento " + position, Toast.LENGTH_SHORT).show();
             }
         });
@@ -126,6 +132,8 @@ public class MainActivity extends AppCompatActivity
                     //Get the MAC address from the DeviceListActivty via EXTRA
                 //    MAC = intent.getStringExtra(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 
+                    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
                     mDevice = mBluetoothAdapter.getRemoteDevice(MAC);
 
                     try
@@ -134,7 +142,12 @@ public class MainActivity extends AppCompatActivity
 
                         mSocket.connect();
 
+                        connectedThread = new ConnectedThread(mSocket);
+                        connectedThread.start();
+
                         Toast.makeText(MainActivity.this, "CONECTADO CON: " + MAC, Toast.LENGTH_SHORT).show();
+
+                     //   connectedThread.run();
                     } catch (IOException e)
                     {
                         e.printStackTrace();
@@ -156,6 +169,65 @@ public class MainActivity extends AppCompatActivity
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Paisaje 3","Vamos Argentina 3",R.drawable.ic_launcher_foreground));
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Paisaje 4","Vamos Argentina 4",R.drawable.ic_launcher_foreground));
 
+    }
+
+    private class ConnectedThread extends Thread {
+
+        private final InputStream mmInStream;
+        private final OutputStream mmOutStream;
+
+        public ConnectedThread(BluetoothSocket socket)
+        {
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
+
+            // Get the input and output streams, using temp objects because
+            // member streams are final
+            try {
+                tmpIn = socket.getInputStream();
+                tmpOut = socket.getOutputStream();
+            } catch (IOException e) { }
+
+            mmInStream = tmpIn;
+            mmOutStream = tmpOut;
+        }
+
+        public void run()
+        {
+            byte[] buffer = new byte[1024];  // buffer store for the stream
+            int bytes; // bytes returned from read()
+
+            // Keep listening to the InputStream until an exception occurs
+            while (true) {
+                try {
+                    // Read from the InputStream
+                    bytes = mmInStream.read(buffer);
+                    // Send the obtained bytes to the UI activity
+                  //  mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
+                  //          .sendToTarget();
+                    Toast.makeText(MainActivity.this, bytes, Toast.LENGTH_SHORT).show();
+
+                } catch (IOException e) {
+                    break;
+                }
+            }
+        }
+
+        /* Call this from the main activity to send data to the remote device */
+        public void enviar_byte(byte[] bytes) {
+            try {
+                mmOutStream.write(bytes);
+            } catch (IOException e) { }
+        }
+
+        /* Call this from the main activity to send data to the remote device */
+        public void enviar_string(String datos)
+        {
+            byte[]  msgBuffer = datos.getBytes();
+            try {
+                mmOutStream.write(msgBuffer);
+            } catch (IOException e) { }
+        }
     }
 
 }
