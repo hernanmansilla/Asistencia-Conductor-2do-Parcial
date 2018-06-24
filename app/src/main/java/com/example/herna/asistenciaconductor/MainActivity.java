@@ -6,6 +6,8 @@ package com.example.herna.asistenciaconductor;
 // https://www.youtube.com/watch?v=q8b5WMnUO04
 // http://yuliana.lecturer.pens.ac.id/Android/Buku/professional_android_4_application_development.pdf
 
+//http://cursoandroidstudio.blogspot.com/2015/10/conexion-bluetooth-android-con-arduino.html
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -26,12 +28,16 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity
 {
-
    private ArrayList<DatosRecyclerViewPrincipal> ListaUsuariosPrincipal;
    private RecyclerView recyclerUsuarios;
    private static final int ENABLE_BLUETOOTH = 1;
-   BluetoothSocket mSocket;
-   BluetoothDevice mDevice;
+   private static final int SOLICITA_CONEXION =2;
+   private static String MAC = null;
+   BluetoothSocket mSocket = null;
+   BluetoothDevice mDevice = null;
+   BluetoothAdapter mBluetoothAdapter = null;
+
+   UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -75,22 +81,6 @@ public class MainActivity extends AppCompatActivity
                     else
                     {
                         Toast.makeText(MainActivity.this, "bluetooth ya encendido", Toast.LENGTH_SHORT).show();
-
-                        // Si ya esta encendido realizo la conexion
-      /*                  if(mSocket != null && mSocket.isConnected())
-                        {
-                            mOutputStream.write(45);
-                        }
-                        else
-                        {
-                            // Inicializo la conexion
-                            UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-                            mSocket = mDevice.createRfcommSocketToServiceRecord(uuid);
-                            mSocket.connect();
-                            mOutputStream = mSocket.getOutputStream();
-                            mOutputStream.write(45);
-                        }*/
-
                     }
             }
             @Override
@@ -105,27 +95,53 @@ public class MainActivity extends AppCompatActivity
 
         // Linea de separacion entre items de la lista
         recyclerUsuarios.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-
-    /*    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-        {
-        if (requestCode == ENABLE_BLUETOOTH)
-            if (resultCode == RESULT_OK) {
-                // Bluetooth has been enabled, initialize the UI.
-                Toast.makeText(MainActivity.this, "bluetooth ya encendido", Toast.LENGTH_SHORT).show();
-            }
-        }*/
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
      //   super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ENABLE_BLUETOOTH)
-            if (resultCode == RESULT_OK) {
-                // Bluetooth has been enabled, initialize the UI.
-                Toast.makeText(MainActivity.this, "bluetooth encendido", Toast.LENGTH_SHORT).show();
-            }
+        switch (requestCode)
+        {
+            case ENABLE_BLUETOOTH:
+
+                if (resultCode == RESULT_OK)
+                {
+                    // Si entre aca es porque active el bluetooth
+                    Toast.makeText(MainActivity.this, "bluetooth encendido", Toast.LENGTH_SHORT).show();
+                    Intent activityListaDispositivos = new Intent(MainActivity.this, ListaDispositivos.class);
+                    startActivityForResult(activityListaDispositivos, SOLICITA_CONEXION);
+                }
+                break;
+
+            case SOLICITA_CONEXION:
+
+                if(resultCode == RESULT_OK)
+                {
+                    // Tomo la MAC de la lista de dispositivos aparejados para conectarme
+                    MAC = data.getExtras().getString(ListaDispositivos.ENDERECO_MAC);
+                    //Get MAC address from DeviceListActivity via intent
+                 //   Intent intent = getIntent();
+
+                    //Get the MAC address from the DeviceListActivty via EXTRA
+                //    MAC = intent.getStringExtra(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+
+                    mDevice = mBluetoothAdapter.getRemoteDevice(MAC);
+
+                    try
+                    {
+                        mSocket = mDevice.createRfcommSocketToServiceRecord(mUUID);
+
+                        mSocket.connect();
+
+                        Toast.makeText(MainActivity.this, "CONECTADO CON: " + MAC, Toast.LENGTH_SHORT).show();
+                    } catch (IOException e)
+                    {
+                        e.printStackTrace();
+                        Toast.makeText(MainActivity.this, "Error al conectar", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        }
     //}
     }
 
