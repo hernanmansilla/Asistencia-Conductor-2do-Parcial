@@ -8,25 +8,19 @@ package com.example.herna.asistenciaconductor;
 
 //http://cursoandroidstudio.blogspot.com/2015/10/conexion-bluetooth-android-con-arduino.html
 
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -35,8 +29,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.logging.Handler;
 
+import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.Datos_Recibidos_BT;
 import static com.example.herna.asistenciaconductor.AsyncTask_BTinit_Dialog.connectedThread;
 
 public class MainActivity extends AppCompatActivity
@@ -52,7 +46,7 @@ public class MainActivity extends AppCompatActivity
   // static public AsyncTask_BT_RX Bluetooth_RX;
    static public boolean Bluetooth_Conectado=false;
    static public boolean Bluetooth_Encendido=false;
-   static public byte[] buffer_rx_BT = new byte[10];  // buffer store for the stream
+   static public byte[] buffer_rx_BT = new byte[1];  // buffer store for the stream
     static public int Cant_bytes_rx_BT=0; // bytes returned from read()
     static public UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     static public ProgressDialog pDialog;
@@ -93,31 +87,45 @@ public class MainActivity extends AppCompatActivity
                     else
                     {
                         Bluetooth_Encendido = true;
-                        Intent activityListaDispositivos = new Intent(MainActivity.this, ListaDispositivos.class);
-                        startActivityForResult(activityListaDispositivos, SOLICITA_CONEXION);
+
+                        if(Bluetooth_Conectado == false)
+                        {
+                            Intent activityListaDispositivos = new Intent(MainActivity.this, ListaDispositivos.class);
+                            startActivityForResult(activityListaDispositivos, SOLICITA_CONEXION);
+                        }
+                        else
+                        {
+                            Toast.makeText(MainActivity.this, "Ya posee una conexion activa", Toast.LENGTH_SHORT).show();
+                        }
                     }
             }
             @Override
             public void onDeleteClick(int position)
             {
-                if(Bluetooth_Conectado==true && Bluetooth_Encendido==true)
+                switch (position)
                 {
-                    connectedThread.enviar_string("hola");
+                    case 0:
+                    if (Bluetooth_Conectado == true && Bluetooth_Encendido == true) {
+                        connectedThread.enviar_string("hola");
 
-                 //   Toast.makeText(MainActivity.this, "Borre el elemento " + position, Toast.LENGTH_SHORT).show();
-                    Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
+                    } else
+                        Toast.makeText(MainActivity.this, "No posee una conexion Bluetooth " + position, Toast.LENGTH_SHORT).show();
 
-            /*        connectedThread.run();
+                    break;
 
-                    if(Cant_bytes_rx_BT>0)
-                    {
-                        String datos_recibidos = Arrays.toString(buffer_rx_BT);
-                        Toast.makeText(MainActivity.this, "Datos recibidos: " + datos_recibidos, Toast.LENGTH_SHORT).show();
-                        Cant_bytes_rx_BT=0;
-                    }*/
+                    case 1:
+
+                        if(Datos_Recibidos_BT == true)
+                        {
+                         //   String datos_recibidos = Arrays.toString(buffer_rx_BT);
+                            String datos_recibidos = new String(buffer_rx_BT);
+                            Toast.makeText(MainActivity.this, "Datos recibidos: " + datos_recibidos, Toast.LENGTH_SHORT).show();
+                            Datos_Recibidos_BT = false;
+                            Cant_bytes_rx_BT=0;
+                        }
+                        break;
                 }
-                else
-                    Toast.makeText(MainActivity.this, "No posee una conexion Bluetooth " + position, Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -127,14 +135,6 @@ public class MainActivity extends AppCompatActivity
         // Linea de separacion entre items de la lista
         recyclerUsuarios.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-//        connectedThread.run();
-
- /*       if(Cant_bytes_rx_BT>0)
-        {
-            String datos_recibidos = Arrays.toString(buffer_rx_BT);
-            Toast.makeText(MainActivity.this, "Datos recibidos: " + datos_recibidos, Toast.LENGTH_SHORT).show();
-            Cant_bytes_rx_BT=0;
-        }*/
     }
 
     // Instanciamos un BroadcastReceiver que se encargara de detectar si el estado
@@ -264,8 +264,8 @@ public class MainActivity extends AppCompatActivity
          //   int bytes_recibidos; // bytes returned from read()
 
             // Keep listening to the InputStream until an exception occurs
-    //        while (espero_datos == true)
-    //        {
+            while (espero_datos == true)
+            {
                 try {
                     // Read from the InputStream
                     Cant_bytes_rx_BT = mmInStream.read(buffer_rx_BT);
@@ -286,7 +286,8 @@ public class MainActivity extends AppCompatActivity
                 {
                 //    break;
                 }
-    //        }
+          //      return espero_datos;
+            }
         }
 
         /* Call this from the main activity to send data to the remote device */
