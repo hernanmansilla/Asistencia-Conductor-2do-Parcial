@@ -19,6 +19,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -32,7 +33,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
+import java.util.logging.Handler;
+
+import static com.example.herna.asistenciaconductor.AsyncTask_BTinit_Dialog.connectedThread;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -40,17 +45,17 @@ public class MainActivity extends AppCompatActivity
    private RecyclerView recyclerUsuarios;
    private static final int ENABLE_BLUETOOTH = 1;
    private static final int SOLICITA_CONEXION =2;
-   private static String MAC = null;
-   BluetoothSocket mSocket = null;
-   BluetoothDevice mDevice = null;
+   static public String MAC = null;
+   static public BluetoothDevice mDevice = null;
    BluetoothAdapter mBluetoothAdapter = null;
-   ConnectedThread connectedThread;
-   ProgressDialog pDialog;
-   MiTareaAsincronaDialog tarea2;
-   boolean Bluetooth_Conectado=false;
-   boolean Bluetooth_Encendido=false;
-
-    UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+   AsyncTask_BTinit_Dialog Bluetooth_init;
+  // static public AsyncTask_BT_RX Bluetooth_RX;
+   static public boolean Bluetooth_Conectado=false;
+   static public boolean Bluetooth_Encendido=false;
+   static public byte[] buffer_rx_BT = new byte[10];  // buffer store for the stream
+    static public int Cant_bytes_rx_BT=0; // bytes returned from read()
+    static public UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+    static public ProgressDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -95,10 +100,21 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onDeleteClick(int position)
             {
-                if(Bluetooth_Conectado==true && Bluetooth_Encendido==true) {
+                if(Bluetooth_Conectado==true && Bluetooth_Encendido==true)
+                {
                     connectedThread.enviar_string("hola");
 
-                    Toast.makeText(MainActivity.this, "Borre el elemento " + position, Toast.LENGTH_SHORT).show();
+                 //   Toast.makeText(MainActivity.this, "Borre el elemento " + position, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
+
+            /*        connectedThread.run();
+
+                    if(Cant_bytes_rx_BT>0)
+                    {
+                        String datos_recibidos = Arrays.toString(buffer_rx_BT);
+                        Toast.makeText(MainActivity.this, "Datos recibidos: " + datos_recibidos, Toast.LENGTH_SHORT).show();
+                        Cant_bytes_rx_BT=0;
+                    }*/
                 }
                 else
                     Toast.makeText(MainActivity.this, "No posee una conexion Bluetooth " + position, Toast.LENGTH_SHORT).show();
@@ -110,6 +126,15 @@ public class MainActivity extends AppCompatActivity
 
         // Linea de separacion entre items de la lista
         recyclerUsuarios.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+//        connectedThread.run();
+
+ /*       if(Cant_bytes_rx_BT>0)
+        {
+            String datos_recibidos = Arrays.toString(buffer_rx_BT);
+            Toast.makeText(MainActivity.this, "Datos recibidos: " + datos_recibidos, Toast.LENGTH_SHORT).show();
+            Cant_bytes_rx_BT=0;
+        }*/
     }
 
     // Instanciamos un BroadcastReceiver que se encargara de detectar si el estado
@@ -192,8 +217,8 @@ public class MainActivity extends AppCompatActivity
 
                     mDevice = mBluetoothAdapter.getRemoteDevice(MAC);
 
-                    tarea2 = new MiTareaAsincronaDialog();
-                    tarea2.execute();
+                    Bluetooth_init = new AsyncTask_BTinit_Dialog();
+                    Bluetooth_init.execute();
                 }
         }
     }
@@ -211,7 +236,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private class ConnectedThread extends Thread {
+    public static class ConnectedThread extends Thread {
 
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
@@ -234,23 +259,34 @@ public class MainActivity extends AppCompatActivity
 
         public void run()
         {
-            byte[] buffer = new byte[1024];  // buffer store for the stream
-            int bytes; // bytes returned from read()
+            boolean espero_datos=true;
+         //   byte[] buffer = new byte[]{0};  // buffer store for the stream
+         //   int bytes_recibidos; // bytes returned from read()
 
             // Keep listening to the InputStream until an exception occurs
-            while (true) {
+    //        while (espero_datos == true)
+    //        {
                 try {
                     // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
-                    // Send the obtained bytes to the UI activity
-                  //  mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer)
-                  //          .sendToTarget();
-                    Toast.makeText(MainActivity.this, bytes, Toast.LENGTH_SHORT).show();
+                    Cant_bytes_rx_BT = mmInStream.read(buffer_rx_BT);
+                  //  String datos_recibidos = new String(buffer, "UTF-8");
 
-                } catch (IOException e) {
-                    break;
+                    if(Cant_bytes_rx_BT>0)
+                    {
+                        espero_datos=false;
+                    //    Cant_bytes_rx_BT=0;
+                        //Send the obtained bytes to the UI activity
+                    //      mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+                   //     datos_recibidos = buffer.toString();
+                    //    Toast.makeText(MainActivity.this, "Dato recibido: " , Toast.LENGTH_SHORT).show();
+                     //   break;
+                    }
+
+                } catch (IOException e)
+                {
+                //    break;
                 }
-            }
+    //        }
         }
 
         /* Call this from the main activity to send data to the remote device */
@@ -267,82 +303,6 @@ public class MainActivity extends AppCompatActivity
             try {
                 mmOutStream.write(msgBuffer);
             } catch (IOException e) { }
-        }
-    }
-
-    private class MiTareaAsincronaDialog extends AsyncTask<Void, Integer, Boolean>
-    {
-        @Override
-        protected Boolean doInBackground(Void... params)
-        {
-                publishProgress(1*10);
-                try
-                {
-                    mSocket = mDevice.createRfcommSocketToServiceRecord(mUUID);
-                    mSocket.connect();
-                    connectedThread = new ConnectedThread(mSocket);
-                    connectedThread.start();
-
-               //     Toast.makeText(MainActivity.this, "CONECTADO CON: " + MAC, Toast.LENGTH_SHORT).show();
-
-                } catch (IOException e)
-                {
-             //      e.printStackTrace();
-                    Toast.makeText(MainActivity.this, "Error al conectar", Toast.LENGTH_SHORT).show();
-                    pDialog.dismiss();
-                    return false;
-                }
-
-                publishProgress(10*10);
-
-                if(isCancelled())
-                    return false;
-
-            return true;
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values)
-        {
-            int progreso = values[0].intValue();
-
-            pDialog.setProgress(progreso);
-        }
-
-        @Override
-        protected void onPreExecute()
-        {
-
-            pDialog.setOnCancelListener(new DialogInterface.OnCancelListener()
-            {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    MiTareaAsincronaDialog.this.cancel(true);
-                }
-            });
-
-            pDialog.setProgress(0);
-            pDialog.show();
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result)
-        {
-            if(result)
-            {
-                pDialog.dismiss();
-                Bluetooth_Conectado=true;
-             //   Toast.makeText(MainActivity.this, "Tarea finalizada!",
-             //           Toast.LENGTH_SHORT).show();
-                Toast.makeText(MainActivity.this, "CONECTADO CON: " + MAC, Toast.LENGTH_SHORT).show();
-            }
-            else
-                Toast.makeText(MainActivity.this, "Error al conectar", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        protected void onCancelled() {
-            Toast.makeText(MainActivity.this, "Tarea cancelada!", Toast.LENGTH_SHORT).show();
         }
     }
 }
