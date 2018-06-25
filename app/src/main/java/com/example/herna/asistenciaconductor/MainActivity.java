@@ -8,10 +8,17 @@ package com.example.herna.asistenciaconductor;
 
 //http://cursoandroidstudio.blogspot.com/2015/10/conexion-bluetooth-android-con-arduino.html
 
+import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -38,8 +45,12 @@ public class MainActivity extends AppCompatActivity
    BluetoothDevice mDevice = null;
    BluetoothAdapter mBluetoothAdapter = null;
    ConnectedThread connectedThread;
+   ProgressDialog pDialog;
+   MiTareaAsincronaDialog tarea2;
+   boolean Bluetooth_Conectado=false;
+   boolean Bluetooth_Encendido=false;
 
-   UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+    UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -53,24 +64,18 @@ public class MainActivity extends AppCompatActivity
 
         LlenarUsuarios();
 
+        // Registramos el BroadcastReceiver que instanciamos previamente para
+        // detectar los distintos eventos que queremos recibir
+        IntentFilter filtro = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        this.registerReceiver(bReceiver, filtro);
+
         AdaptadorRecyclerViewPrincipal adapter = new AdaptadorRecyclerViewPrincipal(ListaUsuariosPrincipal);
 
-   /*    adapter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-               // Log.i("DemoRecView", "Pulsado el elemento " + recyclerUsuarios.getChildPosition(v));
-                Toast.makeText(MainActivity.this, "Pulsado el elemento " + recyclerUsuarios.getChildPosition(v), Toast.LENGTH_SHORT).show();
-            }
-        });
-*/
         adapter.setOnItemClickListener(new AdaptadorRecyclerViewPrincipal.OnItemClickListener()
         {
             @Override
             public void onItemClick(int position)
             {
-                 //   OutputStream outputStream;
-                    OutputStream mOutputStream = null;
                     BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
 
                     if (!bluetooth.isEnabled())
@@ -82,18 +87,22 @@ public class MainActivity extends AppCompatActivity
                     }
                     else
                     {
-                        Toast.makeText(MainActivity.this, "bluetooth ya encendido", Toast.LENGTH_SHORT).show();
+                        Bluetooth_Encendido = true;
+                        Intent activityListaDispositivos = new Intent(MainActivity.this, ListaDispositivos.class);
+                        startActivityForResult(activityListaDispositivos, SOLICITA_CONEXION);
                     }
             }
             @Override
             public void onDeleteClick(int position)
             {
-                // ListaUsuariosPrincipal.get(position);
-                connectedThread.enviar_string("hola");
+                if(Bluetooth_Conectado==true && Bluetooth_Encendido==true) {
+                    connectedThread.enviar_string("hola");
 
-         //       connectedThread.run();
+                    Toast.makeText(MainActivity.this, "Borre el elemento " + position, Toast.LENGTH_SHORT).show();
+                }
+                else
+                    Toast.makeText(MainActivity.this, "No posee una conexion Bluetooth " + position, Toast.LENGTH_SHORT).show();
 
-                Toast.makeText(MainActivity.this, "Borre el elemento " + position, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -103,10 +112,56 @@ public class MainActivity extends AppCompatActivity
         recyclerUsuarios.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
+    // Instanciamos un BroadcastReceiver que se encargara de detectar si el estado
+    // del Bluetooth del dispositivo ha cambiado mediante su handler onReceive
+    private final BroadcastReceiver bReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            final String action = intent.getAction();
+
+            // Filtramos por la accion. Nos interesa detectar BluetoothAdapter.ACTION_STATE_CHANGED
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action))
+            {
+                // Solicitamos la informacion extra del intent etiquetada como BluetoothAdapter.EXTRA_STATE
+                // El segundo parametro indicara el valor por defecto que se obtendra si el dato extra no existe
+                final int estado = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+
+                switch (estado)
+                {
+                    case BluetoothAdapter.STATE_OFF:
+                        Bluetooth_Encendido=false;
+                        Bluetooth_Conectado=false;
+                        Toast.makeText(MainActivity.this, "bluetooth apagado", Toast.LENGTH_SHORT).show();
+                        break;
+
+                    case BluetoothAdapter.STATE_ON:
+                        Bluetooth_Encendido=true;
+                        Toast.makeText(MainActivity.this, "Bluetooth encendido", Toast.LENGTH_SHORT).show();
+                        break;
+
+                    case BluetoothAdapter.STATE_DISCONNECTED:
+                        Bluetooth_Conectado=false;
+                        Toast.makeText(MainActivity.this, "Dispositivo desconectado", Toast.LENGTH_SHORT).show();
+                        break;
+
+                    case BluetoothAdapter.STATE_CONNECTED:
+                        Bluetooth_Conectado=true;
+                        Toast.makeText(MainActivity.this, "CONECTADO CON: " + MAC, Toast.LENGTH_SHORT).show();
+                        break;
+
+                    case BluetoothAdapter.ERROR:
+                        Toast.makeText(MainActivity.this, "Error BT", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }
+    };
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-     //   super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode)
         {
             case ENABLE_BLUETOOTH:
@@ -114,7 +169,7 @@ public class MainActivity extends AppCompatActivity
                 if (resultCode == RESULT_OK)
                 {
                     // Si entre aca es porque active el bluetooth
-                    Toast.makeText(MainActivity.this, "bluetooth encendido", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "bluetooth encendido", Toast.LENGTH_SHORT).show();
                     Intent activityListaDispositivos = new Intent(MainActivity.this, ListaDispositivos.class);
                     startActivityForResult(activityListaDispositivos, SOLICITA_CONEXION);
                 }
@@ -124,38 +179,23 @@ public class MainActivity extends AppCompatActivity
 
                 if(resultCode == RESULT_OK)
                 {
+                    pDialog = new ProgressDialog(MainActivity.this);
+                    pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                    pDialog.setMessage("Conectando dispositivo");
+                    pDialog.setCancelable(true);
+                    pDialog.setMax(100);
+
                     // Tomo la MAC de la lista de dispositivos aparejados para conectarme
                     MAC = data.getExtras().getString(ListaDispositivos.ENDERECO_MAC);
-                    //Get MAC address from DeviceListActivity via intent
-                 //   Intent intent = getIntent();
-
-                    //Get the MAC address from the DeviceListActivty via EXTRA
-                //    MAC = intent.getStringExtra(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 
                     mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
                     mDevice = mBluetoothAdapter.getRemoteDevice(MAC);
 
-                    try
-                    {
-                        mSocket = mDevice.createRfcommSocketToServiceRecord(mUUID);
-
-                        mSocket.connect();
-
-                        connectedThread = new ConnectedThread(mSocket);
-                        connectedThread.start();
-
-                        Toast.makeText(MainActivity.this, "CONECTADO CON: " + MAC, Toast.LENGTH_SHORT).show();
-
-                     //   connectedThread.run();
-                    } catch (IOException e)
-                    {
-                        e.printStackTrace();
-                        Toast.makeText(MainActivity.this, "Error al conectar", Toast.LENGTH_SHORT).show();
-                    }
+                    tarea2 = new MiTareaAsincronaDialog();
+                    tarea2.execute();
                 }
         }
-    //}
     }
 
     private void LlenarUsuarios()
@@ -230,4 +270,79 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private class MiTareaAsincronaDialog extends AsyncTask<Void, Integer, Boolean>
+    {
+        @Override
+        protected Boolean doInBackground(Void... params)
+        {
+                publishProgress(1*10);
+                try
+                {
+                    mSocket = mDevice.createRfcommSocketToServiceRecord(mUUID);
+                    mSocket.connect();
+                    connectedThread = new ConnectedThread(mSocket);
+                    connectedThread.start();
+
+               //     Toast.makeText(MainActivity.this, "CONECTADO CON: " + MAC, Toast.LENGTH_SHORT).show();
+
+                } catch (IOException e)
+                {
+             //      e.printStackTrace();
+                    Toast.makeText(MainActivity.this, "Error al conectar", Toast.LENGTH_SHORT).show();
+                    pDialog.dismiss();
+                    return false;
+                }
+
+                publishProgress(10*10);
+
+                if(isCancelled())
+                    return false;
+
+            return true;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values)
+        {
+            int progreso = values[0].intValue();
+
+            pDialog.setProgress(progreso);
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+
+            pDialog.setOnCancelListener(new DialogInterface.OnCancelListener()
+            {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    MiTareaAsincronaDialog.this.cancel(true);
+                }
+            });
+
+            pDialog.setProgress(0);
+            pDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result)
+        {
+            if(result)
+            {
+                pDialog.dismiss();
+                Bluetooth_Conectado=true;
+             //   Toast.makeText(MainActivity.this, "Tarea finalizada!",
+             //           Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "CONECTADO CON: " + MAC, Toast.LENGTH_SHORT).show();
+            }
+            else
+                Toast.makeText(MainActivity.this, "Error al conectar", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onCancelled() {
+            Toast.makeText(MainActivity.this, "Tarea cancelada!", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
