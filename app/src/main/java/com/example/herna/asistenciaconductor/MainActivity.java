@@ -8,6 +8,9 @@ package com.example.herna.asistenciaconductor;
 
 //http://cursoandroidstudio.blogspot.com/2015/10/conexion-bluetooth-android-con-arduino.html
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -16,6 +19,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.BitmapDrawable;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -50,6 +55,8 @@ public class MainActivity extends AppCompatActivity
     static public int Cant_bytes_rx_BT=0; // bytes returned from read()
     static public UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     static public ProgressDialog pDialog;
+   NotificationCompat.Builder mBuilder;
+    static final int NOTIF_ALERTA_ID=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -67,6 +74,27 @@ public class MainActivity extends AppCompatActivity
         // detectar los distintos eventos que queremos recibir
         IntentFilter filtro = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         this.registerReceiver(bReceiver, filtro);
+
+        mBuilder = new NotificationCompat.Builder(MainActivity.this);
+        mBuilder.setAutoCancel(true);
+   //     mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        mBuilder.setPriority(Notification.PRIORITY_HIGH);
+        mBuilder.setSmallIcon(android.R.drawable.stat_sys_warning);
+        mBuilder.setTicker("Datos Recibidos Bluetooth");
+        mBuilder.setWhen(System.currentTimeMillis());
+    //    mBuilder.setLargeIcon((((BitmapDrawable)getResources();
+    //    mBuilder.getDrawable(R.drawable.ic_launcher_foreground)).getBitmap()));
+        mBuilder.setContentTitle("Mensaje de Alerta");
+        mBuilder.setContentText("Ejemplo de notificación.");
+     //   mBuilder.setContentInfo("4");
+
+        Intent Intent = new Intent(MainActivity.this, MainActivity.class);
+
+        PendingIntent contIntent = PendingIntent.getActivity(MainActivity.this, 0, Intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        mBuilder.setContentIntent(contIntent);
+
+        final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         AdaptadorRecyclerViewPrincipal adapter = new AdaptadorRecyclerViewPrincipal(ListaUsuariosPrincipal);
 
@@ -105,7 +133,7 @@ public class MainActivity extends AppCompatActivity
                 switch (position)
                 {
                     case 0:
-                    if (Bluetooth_Conectado == true && Bluetooth_Encendido == true) {
+                     if (Bluetooth_Conectado == true && Bluetooth_Encendido == true) {
                         connectedThread.enviar_string("hola");
 
                         Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
@@ -119,6 +147,7 @@ public class MainActivity extends AppCompatActivity
                         if(Datos_Recibidos_BT == true)
                         {
                          //   String datos_recibidos = Arrays.toString(buffer_rx_BT);
+                            mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
                             String datos_recibidos = new String(buffer_rx_BT);
                             Toast.makeText(MainActivity.this, "Datos recibidos: " + datos_recibidos, Toast.LENGTH_SHORT).show();
                             Datos_Recibidos_BT = false;
@@ -126,7 +155,6 @@ public class MainActivity extends AppCompatActivity
                         }
                         break;
                 }
-
             }
         });
 
@@ -134,6 +162,7 @@ public class MainActivity extends AppCompatActivity
 
         // Linea de separacion entre items de la lista
         recyclerUsuarios.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
 
     }
 

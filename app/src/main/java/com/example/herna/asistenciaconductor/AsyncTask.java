@@ -1,6 +1,7 @@
 package com.example.herna.asistenciaconductor;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
@@ -12,6 +13,7 @@ import java.io.IOException;
 
 import static com.example.herna.asistenciaconductor.AsyncTask_BTinit_Dialog.connectedThread;
 import static com.example.herna.asistenciaconductor.MainActivity.MAC;
+import static com.example.herna.asistenciaconductor.MainActivity.NOTIF_ALERTA_ID;
 import static com.example.herna.asistenciaconductor.MainActivity.mDevice;
 import static com.example.herna.asistenciaconductor.MainActivity.mUUID;
 import static com.example.herna.asistenciaconductor.MainActivity.pDialog;
@@ -22,6 +24,7 @@ class AsyncTask_BTinit_Dialog extends AsyncTask<Void, Integer, Boolean>
     BluetoothSocket mSocket = null;
     static public MainActivity.ConnectedThread connectedThread;
     static public AsyncTask_BT_RX Bluetooth_RX;
+
 
     @Override
     protected Boolean doInBackground(Void... params)
@@ -101,6 +104,7 @@ class AsyncTask_BT_RX extends AsyncTask<Void, Integer, Boolean>
 {
     static public AsyncTask_BT_RX Bluetooth_RX;
     static public boolean Datos_Recibidos_BT;
+   // NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
     @Override
     protected Boolean doInBackground(Void... voids)
@@ -116,6 +120,7 @@ class AsyncTask_BT_RX extends AsyncTask<Void, Integer, Boolean>
         if(result)
         {
             // Inicio la escucha de lo que me llega por Bluetooth
+      //      mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
             Datos_Recibidos_BT = true;
             Bluetooth_RX = new AsyncTask_BT_RX();
             Bluetooth_RX.execute();
