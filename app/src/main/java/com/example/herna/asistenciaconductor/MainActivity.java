@@ -5,8 +5,9 @@ package com.example.herna.asistenciaconductor;
 // https://code.tutsplus.com/es/tutorials/create-a-bluetooth-scanner-with-androids-bluetooth-api--cms-24084
 // https://www.youtube.com/watch?v=q8b5WMnUO04
 // http://yuliana.lecturer.pens.ac.id/Android/Buku/professional_android_4_application_development.pdf
-
 //http://cursoandroidstudio.blogspot.com/2015/10/conexion-bluetooth-android-con-arduino.html
+
+//https://www.youtube.com/watch?v=0tT6zKFfrfg
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -20,23 +21,36 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
+import android.location.Location;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.Datos_Recibidos_BT;
 import static com.example.herna.asistenciaconductor.AsyncTask_BTinit_Dialog.connectedThread;
+import static com.example.herna.asistenciaconductor.Ubicacion.Latitud_GPS;
+import static com.example.herna.asistenciaconductor.Ubicacion.Longitud_GPS;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -57,6 +71,10 @@ public class MainActivity extends AppCompatActivity
     static public ProgressDialog pDialog;
    NotificationCompat.Builder mBuilder;
     static final int NOTIF_ALERTA_ID=1;
+    EditText Latitud_editText;
+    EditText Longitud_editText;
+    boolean gps_enabled = false,network_enabled = false;
+   public Button Boton_GPS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -64,12 +82,40 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Latitud_editText = findViewById(R.id.Latitud);
+        Longitud_editText = findViewById(R.id.Longitud);
+        Boton_GPS = findViewById(R.id.button_GPS);
+
         ListaUsuariosPrincipal = new ArrayList<>();
         recyclerUsuarios = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerUsuarios.setLayoutManager(new LinearLayoutManager(this));
 
         LlenarUsuarios();
 
+        Ubicacion ubicacion = new Ubicacion(this);
+
+     //   LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+     //   Localizacion Local = new Localizacion();
+
+    /*    try
+        {
+            gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        }
+        catch(Exception ex)
+        {
+            try
+            {
+                network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            }
+            catch(Exception ex2)
+            {
+                Toast toast = Toast.makeText(getApplicationContext(),"Ubicaci�n no disponible",Toast.LENGTH_SHORT);
+                toast.show();
+
+            }
+
+        }
+*/
         // Registramos el BroadcastReceiver que instanciamos previamente para
         // detectar los distintos eventos que queremos recibir
         IntentFilter filtro = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
@@ -78,19 +124,19 @@ public class MainActivity extends AppCompatActivity
         mBuilder = new NotificationCompat.Builder(MainActivity.this);
         mBuilder.setAutoCancel(true);
    //     mBuilder.setSmallIcon(R.mipmap.ic_launcher);
-        mBuilder.setPriority(Notification.PRIORITY_HIGH);
+   //     mBuilder.setPriority(Notification.PRIORITY_HIGH);
         mBuilder.setSmallIcon(android.R.drawable.stat_sys_warning);
         mBuilder.setTicker("Datos Recibidos Bluetooth");
         mBuilder.setWhen(System.currentTimeMillis());
     //    mBuilder.setLargeIcon((((BitmapDrawable)getResources();
     //    mBuilder.getDrawable(R.drawable.ic_launcher_foreground)).getBitmap()));
-        mBuilder.setContentTitle("Mensaje de Alerta");
+        mBuilder.setContentTitle("Datos Recibidos Bluetooth");
         mBuilder.setContentText("Ejemplo de notificación.");
      //   mBuilder.setContentInfo("4");
 
         Intent Intent = new Intent(MainActivity.this, MainActivity.class);
 
-        PendingIntent contIntent = PendingIntent.getActivity(MainActivity.this, 0, Intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent contIntent = PendingIntent.getActivity(MainActivity.this, 0, Intent, 0);
 
         mBuilder.setContentIntent(contIntent);
 
@@ -138,7 +184,10 @@ public class MainActivity extends AppCompatActivity
 
                         Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
                     } else
-                        Toast.makeText(MainActivity.this, "No posee una conexion Bluetooth " + position, Toast.LENGTH_SHORT).show();
+                        {
+                            mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
+                         Toast.makeText(MainActivity.this, "No posee una conexion Bluetooth " + position, Toast.LENGTH_SHORT).show();
+                     }
 
                     break;
 
@@ -163,7 +212,15 @@ public class MainActivity extends AppCompatActivity
         // Linea de separacion entre items de la lista
         recyclerUsuarios.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
-
+        Boton_GPS.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Latitud_editText.setText(Latitud_GPS);
+                Longitud_editText.setText(Longitud_GPS);
+            }
+        });
     }
 
     // Instanciamos un BroadcastReceiver que se encargara de detectar si el estado
@@ -264,7 +321,18 @@ public class MainActivity extends AppCompatActivity
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Paisaje 4","Vamos Argentina 4",R.drawable.ic_launcher_foreground));
 
     }
-
+/*
+    private void updateUI(Location loc)
+    {
+        if (loc != null) {
+            Latitud.setText("Latitud: " + String.valueOf(loc.getLatitude()));
+            Longitud.setText("Longitud: " + String.valueOf(loc.getLongitude()));
+        } else {
+            Latitud.setText("Latitud: (desconocida)");
+            Longitud.setText("Longitud: (desconocida)");
+        }
+    }
+*/
     public static class ConnectedThread extends Thread {
 
         private final InputStream mmInStream;

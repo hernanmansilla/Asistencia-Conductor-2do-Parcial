@@ -35,4 +35,6 @@ dependencies {
 
     // circle
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+
+    // Localizacion GPS
 }
