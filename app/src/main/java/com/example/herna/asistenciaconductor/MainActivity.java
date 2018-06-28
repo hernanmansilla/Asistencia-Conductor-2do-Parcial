@@ -8,7 +8,10 @@ package com.example.herna.asistenciaconductor;
 //http://cursoandroidstudio.blogspot.com/2015/10/conexion-bluetooth-android-con-arduino.html
 
 //https://www.youtube.com/watch?v=0tT6zKFfrfg
+//https://medium.com/@victor.garibayy/obteniendo-mi-ubicaci%C3%B3n-en-android-studio-377226910823
+//https://medium.com/@victor.garibayy/obteniendo-mi-ubicaci%C3%B3n-en-android-studio-377226910823
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -20,11 +23,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -52,7 +57,7 @@ import static com.example.herna.asistenciaconductor.AsyncTask_BTinit_Dialog.conn
 import static com.example.herna.asistenciaconductor.Ubicacion.Latitud_GPS;
 import static com.example.herna.asistenciaconductor.Ubicacion.Longitud_GPS;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback
 {
    private ArrayList<DatosRecyclerViewPrincipal> ListaUsuariosPrincipal;
    private RecyclerView recyclerUsuarios;
@@ -75,6 +80,8 @@ public class MainActivity extends AppCompatActivity
     EditText Longitud_editText;
     boolean gps_enabled = false,network_enabled = false;
    public Button Boton_GPS;
+   static public int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION=1;
+   static public Context contexto_gral;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -92,7 +99,29 @@ public class MainActivity extends AppCompatActivity
 
         LlenarUsuarios();
 
+        contexto_gral = getApplicationContext();
         Ubicacion ubicacion = new Ubicacion(this);
+
+   /*      if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        //if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            Toast.makeText(MainActivity.this, "No tiene permisos para usar el GPS ", Toast.LENGTH_SHORT).show();
+           // return;
+        }
+        else
+            {
+                LocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+
+        }
+*/
+      //  Ubicacion ubicacion = new Ubicacion(this);
 
      //   LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
      //   Localizacion Local = new Localizacion();
@@ -271,6 +300,21 @@ public class MainActivity extends AppCompatActivity
     };
 
     @Override
+    public void onRequestPermissionsResult(int requestCode,String permissions[], int[]grantResults)
+    {
+        switch (requestCode)
+        {
+            case 1:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    Ubicacion ubicacion = new Ubicacion(this);
+                    // Toast.makeText(MainActivity.this, "Inicio Ubicacion", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         switch (requestCode)
@@ -306,6 +350,11 @@ public class MainActivity extends AppCompatActivity
                     Bluetooth_init = new AsyncTask_BTinit_Dialog();
                     Bluetooth_init.execute();
                 }
+                break;
+
+            case 3:
+                Toast.makeText(MainActivity.this, "GPS encendido " , Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 
@@ -321,18 +370,19 @@ public class MainActivity extends AppCompatActivity
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Paisaje 4","Vamos Argentina 4",R.drawable.ic_launcher_foreground));
 
     }
-/*
-    private void updateUI(Location loc)
-    {
-        if (loc != null) {
-            Latitud.setText("Latitud: " + String.valueOf(loc.getLatitude()));
-            Longitud.setText("Longitud: " + String.valueOf(loc.getLongitude()));
-        } else {
-            Latitud.setText("Latitud: (desconocida)");
-            Longitud.setText("Longitud: (desconocida)");
+
+    /*
+        private void updateUI(Location loc)
+        {
+            if (loc != null) {
+                Latitud.setText("Latitud: " + String.valueOf(loc.getLatitude()));
+                Longitud.setText("Longitud: " + String.valueOf(loc.getLongitude()));
+            } else {
+                Latitud.setText("Latitud: (desconocida)");
+                Longitud.setText("Longitud: (desconocida)");
+            }
         }
-    }
-*/
+    */
     public static class ConnectedThread extends Thread {
 
         private final InputStream mmInStream;
