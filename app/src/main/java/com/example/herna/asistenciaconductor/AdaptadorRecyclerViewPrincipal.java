@@ -85,7 +85,7 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
             imageName = itemView.findViewById(R.id.imagen_nombre);
             imageDesc = itemView.findViewById(R.id.imagen_descripcion);
             imagen_delete = itemView.findViewById(R.id.imagen_delete);
-            parentLayout = itemView.findViewById(R.id.parent_layout);
+          //  parentLayout = itemView.findViewById(R.id.parent_layout);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -200,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+/*
     @Override
     protected void onResume() {
         super.onResume();
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "GPS encendido", Toast.LENGTH_SHORT).show();
         }
     }
-
+*/
     // Instanciamos un BroadcastReceiver que se encargara de detectar si el estado
     // del Bluetooth del dispositivo ha cambiado mediante su handler onReceive
     private final BroadcastReceiver bReceiver = new BroadcastReceiver()
