@@ -33,6 +33,7 @@ import android.location.Geocoder;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     // static public AsyncTask_BT_RX Bluetooth_RX;
     static public boolean Bluetooth_Conectado = false;
     static public boolean Bluetooth_Encendido = false;
-    static public byte[] buffer_rx_BT = new byte[1];  // buffer store for the stream
+    static public byte[] buffer_rx_BT = new byte[256];  // buffer store for the stream
     static public int Cant_bytes_rx_BT = 0; // bytes returned from read()
     static public UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     static public ProgressDialog pDialog;
@@ -88,6 +89,19 @@ public class MainActivity extends AppCompatActivity {
     static public int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     static public Context contexto_gral;
     static public Ubicacion ubicacion;
+    static public int estado_rx_bluetooth=0;
+    static byte [] Chofer_RX_BT;
+    static byte [] DNI_RX_BT;
+    static byte [] KM_Recorridos_RX_BT;
+    static byte[] Cantidad_Infracciones_RX_BT;
+    static byte [] Latitud_Infraccion_RX_BT;
+    static byte [] Longitud_Infraccion_RX_BT;
+    static int Indice_RX_BT=0;
+    static int i;
+    static String Nombre_Chofer=null;
+    static String DNI_Chofer=null;
+    static String Latitud_Infraccion=null;
+    static String Longitud_Infraccion=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +139,13 @@ public class MainActivity extends AppCompatActivity {
         mBuilder.setContentText("Ejemplo de notificación.");
         //   mBuilder.setContentInfo("4");
 
+        Chofer_RX_BT = new byte[10];
+        DNI_RX_BT = new byte[8];
+        KM_Recorridos_RX_BT = new byte[2];
+        Cantidad_Infracciones_RX_BT = new byte[2];
+        Latitud_Infraccion_RX_BT = new byte[11];
+        Longitud_Infraccion_RX_BT = new byte[11];
+
         Intent Intent = new Intent(MainActivity.this, MainActivity.class);
 
         PendingIntent contIntent = PendingIntent.getActivity(MainActivity.this, 0, Intent, 0);
@@ -137,15 +158,18 @@ public class MainActivity extends AppCompatActivity {
 
         adapter.setOnItemClickListener(new AdaptadorRecyclerViewPrincipal.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
+            public void onItemClick(int position)
+            {
                 BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
 
-                if (!bluetooth.isEnabled()) {
+                if (!bluetooth.isEnabled())
+                {
                     // Si el Bluetooth no esta activado, pregunto si quiero activarlo
                     Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(intent, ENABLE_BLUETOOTH);
 
-                } else {
+                } else
+                    {
                     Bluetooth_Encendido = true;
 
                     if (Bluetooth_Conectado == false) {
@@ -355,8 +379,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     */
-    public static class ConnectedThread extends Thread {
-
+    public static class ConnectedThread extends Thread
+    {
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
 
@@ -379,27 +403,46 @@ public class MainActivity extends AppCompatActivity {
         public void run()
         {
             boolean espero_datos=true;
-         //   byte[] buffer = new byte[]{0};  // buffer store for the stream
-         //   int bytes_recibidos; // bytes returned from read()
+            byte[] buffer = new byte[256];  // buffer store for the stream
+            int bytes_recibidos; // bytes returned from read()
+
 
             // Keep listening to the InputStream until an exception occurs
             while (espero_datos == true)
             {
                 try {
                     // Read from the InputStream
-                    Cant_bytes_rx_BT = mmInStream.read(buffer_rx_BT);
+                    bytes_recibidos = mmInStream.read(buffer_rx_BT);
                   //  String datos_recibidos = new String(buffer, "UTF-8");
 
-                    if(Cant_bytes_rx_BT>0)
+                    //if(bytes_recibidos >=56)
+                    if(bytes_recibidos>0)
                     {
-                        espero_datos=false;
+                     //   String datos_recibidos = new String(buffer_rx_BT);
+                        for(i=0;i<=47;i++)
+                        {
+                            Recepcion_Datos_Bluetooth(buffer_rx_BT[i]);
+                            buffer_rx_BT[i]=0;
+                        }
+                        bytes_recibidos=0;
+        //                Toast.makeText(contexto_gral, "Datos recibidos: " + datos_recibidos, Toast.LENGTH_SHORT).show();
+                    }
+
+                //    String readMessage = new String(buffer, 0, bytes_recibidos);
+                    // Send the obtained bytes to the UI Activity via handler
+                //    Log.i("logging", readMessage + "");
+
+           //         if(Cant_bytes_rx_BT>=10)
+             //       {
+             //           espero_datos=false;
                     //    Cant_bytes_rx_BT=0;
                         //Send the obtained bytes to the UI activity
-                    //      mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+                   //    Handler mHandler;
+                   //     mHandler.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
                    //     datos_recibidos = buffer.toString();
                     //    Toast.makeText(MainActivity.this, "Dato recibido: " , Toast.LENGTH_SHORT).show();
                      //   break;
-                    }
+         //           }
 
                 } catch (IOException e)
                 {
@@ -424,5 +467,131 @@ public class MainActivity extends AppCompatActivity {
                 mmOutStream.write(msgBuffer);
             } catch (IOException e) { }
         }
+
+        public void Recepcion_Datos_Bluetooth(byte dato)
+        {
+            switch (estado_rx_bluetooth)
+            {
+                case 0:
+                    if(dato == '<')
+                    {
+                        estado_rx_bluetooth = 1;
+                    }
+                    break;
+
+                case 1:
+
+                    if(dato == 'S')
+                    {
+                        estado_rx_bluetooth = 2;
+                    }
+                    else
+                    {
+                        estado_rx_bluetooth = 0;
+                        i=100;
+                    }
+                    break;
+
+                case 2:
+
+                    // Recibo el nombre del conductor
+                    Chofer_RX_BT[Indice_RX_BT] = dato;
+                    Nombre_Chofer = new String(Chofer_RX_BT);
+                    Indice_RX_BT++;
+
+                    if(Indice_RX_BT>=10)
+                    {
+                        estado_rx_bluetooth = 3;
+                        Indice_RX_BT=0;
+                    }
+                    break;
+
+                case 3:
+
+                    // Recibo el numero de dni
+                    DNI_RX_BT[Indice_RX_BT] = dato;
+                    DNI_Chofer = new String(DNI_RX_BT);
+                    Indice_RX_BT++;
+
+                    if(Indice_RX_BT>=8)
+                    {
+                        estado_rx_bluetooth = 4;
+                        Indice_RX_BT=0;
+                    }
+                    break;
+
+                case 4:
+
+                    KM_Recorridos_RX_BT[Indice_RX_BT] = dato;
+                    Indice_RX_BT++;
+
+                    if(Indice_RX_BT>=2)
+                    {
+                        estado_rx_bluetooth=5;
+                        Indice_RX_BT=0;
+                    }
+                    break;
+
+                case 5:
+
+                    Cantidad_Infracciones_RX_BT[Indice_RX_BT] = dato;
+                    Indice_RX_BT++;
+
+                    if(Indice_RX_BT>=2)
+                    {
+                        estado_rx_bluetooth=6;
+                        Indice_RX_BT=0;
+                    }
+                    break;
+
+                case 6:
+
+                    Latitud_Infraccion_RX_BT[Indice_RX_BT] = dato;
+                    Latitud_Infraccion = new String(Latitud_Infraccion_RX_BT);
+                    Indice_RX_BT++;
+
+                    if(Indice_RX_BT>=11)
+                    {
+                        estado_rx_bluetooth=7;
+                        Indice_RX_BT=0;
+                    }
+                    break;
+
+                case 7:
+
+                    Longitud_Infraccion_RX_BT[Indice_RX_BT] = dato;
+                    Longitud_Infraccion = new String(Longitud_Infraccion_RX_BT);
+                    Indice_RX_BT++;
+
+                    if(Indice_RX_BT>=11)
+                    {
+                        estado_rx_bluetooth=8;
+                        Indice_RX_BT=0;
+                    }
+                    break;
+
+                case 8:
+
+                    if(dato == '>')
+                    {
+                        estado_rx_bluetooth=0;
+                        // Recibi bien los datos
+                    }
+                    else
+                        {
+                            estado_rx_bluetooth=0;
+                            i = 100;
+                    }
+                    break;
+
+                    default: break;
+
+
+            }
+        }
+
     }
+
+
+
 }
