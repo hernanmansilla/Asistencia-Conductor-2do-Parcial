@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     static public int Cant_bytes_rx_BT = 0; // bytes returned from read()
     static public UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     static public ProgressDialog pDialog;
-    NotificationCompat.Builder mBuilder;
+    static public NotificationCompat.Builder mBuilder;
     static final int NOTIF_ALERTA_ID = 1;
     EditText Latitud_editText;
     EditText Longitud_editText;
@@ -139,12 +139,12 @@ public class MainActivity extends AppCompatActivity {
         mBuilder.setContentText("Ejemplo de notificación.");
         //   mBuilder.setContentInfo("4");
 
-        Chofer_RX_BT = new byte[10];
+       // Chofer_RX_BT = new byte[10];
         DNI_RX_BT = new byte[8];
         KM_Recorridos_RX_BT = new byte[2];
         Cantidad_Infracciones_RX_BT = new byte[2];
-        Latitud_Infraccion_RX_BT = new byte[11];
-        Longitud_Infraccion_RX_BT = new byte[11];
+        Latitud_Infraccion_RX_BT = new byte[10];
+        Longitud_Infraccion_RX_BT = new byte[10];
 
         Intent Intent = new Intent(MainActivity.this, MainActivity.class);
 
@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (position) {
                     case 0:
                         if (Bluetooth_Conectado == true && Bluetooth_Encendido == true) {
-                            connectedThread.enviar_string("hola");
+                            connectedThread.enviar_string(">S34235547<");
 
                             Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
                         } else {
@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                     case 1:
 
                         if (Datos_Recibidos_BT == true) {
-                            //   String datos_recibidos = Arrays.toString(buffer_rx_BT);
+
                             mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
                             String datos_recibidos = new String(buffer_rx_BT);
                             Toast.makeText(MainActivity.this, "Datos recibidos: " + datos_recibidos, Toast.LENGTH_SHORT).show();
@@ -383,6 +383,7 @@ public class MainActivity extends AppCompatActivity {
     {
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
+      //  final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         public ConnectedThread(BluetoothSocket socket)
         {
@@ -419,11 +420,13 @@ public class MainActivity extends AppCompatActivity {
                     if(bytes_recibidos>0)
                     {
                      //   String datos_recibidos = new String(buffer_rx_BT);
-                        for(i=0;i<=47;i++)
+                        for(i=0;i<=34;i++)
                         {
                             Recepcion_Datos_Bluetooth(buffer_rx_BT[i]);
                             buffer_rx_BT[i]=0;
                         }
+
+                        espero_datos=false;
                         bytes_recibidos=0;
         //                Toast.makeText(contexto_gral, "Datos recibidos: " + datos_recibidos, Toast.LENGTH_SHORT).show();
                     }
@@ -448,7 +451,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                 //    break;
                 }
-          //      return espero_datos;
+                return;
             }
         }
 
@@ -481,9 +484,9 @@ public class MainActivity extends AppCompatActivity {
 
                 case 1:
 
-                    if(dato == 'S')
+                    if(dato == 'R')
                     {
-                        estado_rx_bluetooth = 2;
+                        estado_rx_bluetooth = 3;
                     }
                     else
                     {
@@ -492,7 +495,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
 
-                case 2:
+           /*     case 2:
 
                     // Recibo el nombre del conductor
                     Chofer_RX_BT[Indice_RX_BT] = dato;
@@ -505,7 +508,7 @@ public class MainActivity extends AppCompatActivity {
                         Indice_RX_BT=0;
                     }
                     break;
-
+*/
                 case 3:
 
                     // Recibo el numero de dni
@@ -550,7 +553,7 @@ public class MainActivity extends AppCompatActivity {
                     Latitud_Infraccion = new String(Latitud_Infraccion_RX_BT);
                     Indice_RX_BT++;
 
-                    if(Indice_RX_BT>=11)
+                    if(Indice_RX_BT>=10)
                     {
                         estado_rx_bluetooth=7;
                         Indice_RX_BT=0;
@@ -563,7 +566,7 @@ public class MainActivity extends AppCompatActivity {
                     Longitud_Infraccion = new String(Longitud_Infraccion_RX_BT);
                     Indice_RX_BT++;
 
-                    if(Indice_RX_BT>=11)
+                    if(Indice_RX_BT>=10)
                     {
                         estado_rx_bluetooth=8;
                         Indice_RX_BT=0;
@@ -575,7 +578,9 @@ public class MainActivity extends AppCompatActivity {
                     if(dato == '>')
                     {
                         estado_rx_bluetooth=0;
+                        Datos_Recibidos_BT=true;
                         // Recibi bien los datos
+                        //mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
                     }
                     else
                         {
