@@ -38,7 +38,7 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
     {
         holder.imagen.setImageResource(ListaUsuariosPrincipal.get(position).getImagen());
         holder.imageName.setText(ListaUsuariosPrincipal.get(position).getNombre());
-        holder.imageDesc.setText(ListaUsuariosPrincipal.get(position).getDesc());
+        holder.imageDNI.setText(ListaUsuariosPrincipal.get(position).getDesc());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
     public interface OnItemClickListener
     {
         void onItemClick(int position);
-        void onDeleteClick(int position);
+        void onDownloadClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener)
@@ -74,8 +74,8 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
     {
         CircleImageView imagen;
         TextView imageName;
-        TextView imageDesc;
-        ImageView imagen_delete;
+        TextView imageDNI;
+        ImageView imagen_download;
         RelativeLayout parentLayout;
 
         public ViewHolderPrincipal(View itemView, final OnItemClickListener listener)
@@ -83,9 +83,9 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
             super(itemView);
             imagen = itemView.findViewById(R.id.imagen);
             imageName = itemView.findViewById(R.id.imagen_nombre);
-            imageDesc = itemView.findViewById(R.id.imagen_descripcion);
-            imagen_delete = itemView.findViewById(R.id.imagen_delete);
-          //  parentLayout = itemView.findViewById(R.id.parent_layout);
+            imageDNI = itemView.findViewById(R.id.DNI);
+            imagen_download = itemView.findViewById(R.id.imagen_download);
+          //  parentLayout = itemView.findViewById(R.id.parent_layout);e
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -102,7 +102,7 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
                 }
             });
 
-            imagen_delete.setOnClickListener(new View.OnClickListener()
+            imagen_download.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
@@ -112,7 +112,7 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
                         int position = getAdapterPosition();
                         if(position != RecyclerView.NO_POSITION)
                         {
-                            listener.onDeleteClick(position);
+                            listener.onDownloadClick(position);
                         }
                     }
                 }

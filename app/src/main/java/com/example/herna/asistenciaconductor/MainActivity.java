@@ -152,13 +152,27 @@ public class MainActivity extends AppCompatActivity {
 
         mBuilder.setContentIntent(contIntent);
 
-        final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+     //   final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         AdaptadorRecyclerViewPrincipal adapter = new AdaptadorRecyclerViewPrincipal(ListaUsuariosPrincipal);
 
-        adapter.setOnItemClickListener(new AdaptadorRecyclerViewPrincipal.OnItemClickListener() {
+        adapter.setOnItemClickListener(new AdaptadorRecyclerViewPrincipal.OnItemClickListener()
+        {
             @Override
             public void onItemClick(int position)
+            {
+                finish();
+                Intent Activity2 = new Intent(MainActivity.this, ActivitySecundaria.class);
+
+                // Le paso el nombre y el estado del logueo del usuario correspondiente al item selecionado
+             //   Activity2.putExtra("Nombre_usu", ListaDatos.get(position).getNombre());
+             //   Activity2.putExtra("Estado_logueo_usu", estado_logueado);
+                startActivity(Activity2);
+
+            }
+
+            @Override
+            public void onDownloadClick (int position)
             {
                 BluetoothAdapter bluetooth = BluetoothAdapter.getDefaultAdapter();
 
@@ -169,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivityForResult(intent, ENABLE_BLUETOOTH);
 
                 } else
-                    {
+                {
                     Bluetooth_Encendido = true;
 
                     if (Bluetooth_Conectado == false) {
@@ -179,34 +193,44 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Ya posee una conexion activa", Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
 
-            @Override
-            public void onDeleteClick(int position) {
                 switch (position) {
                     case 0:
-                        if (Bluetooth_Conectado == true && Bluetooth_Encendido == true) {
+
+                        Enviar_String_Bluetooth("<S34235547>");
+              /*          if (Bluetooth_Conectado == true && Bluetooth_Encendido == true)
+                        {
                             connectedThread.enviar_string(">S34235547<");
 
                             Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
-                        } else {
+                        } else
+                            {
                             mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
                             Toast.makeText(MainActivity.this, "No posee una conexion Bluetooth " + position, Toast.LENGTH_SHORT).show();
                         }
-
+*/
                         break;
 
                     case 1:
-
-                        if (Datos_Recibidos_BT == true) {
+                        Enviar_String_Bluetooth("<S12345678>");
+                       /* if (Datos_Recibidos_BT == true) {
 
                             mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
                             String datos_recibidos = new String(buffer_rx_BT);
                             Toast.makeText(MainActivity.this, "Datos recibidos: " + datos_recibidos, Toast.LENGTH_SHORT).show();
                             Datos_Recibidos_BT = false;
                             Cant_bytes_rx_BT = 0;
-                        }
+                        }*/
                         break;
+
+                    case 2:
+                        Enviar_String_Bluetooth("<S34500600>");
+                        break;
+
+                    case 3:
+                        Enviar_String_Bluetooth("<S30266999>");
+                        break;
+
                 }
             }
         });
@@ -223,6 +247,21 @@ public class MainActivity extends AppCompatActivity {
                 Longitud_editText.setText(Longitud_GPS);
             }
         });
+    }
+
+    public void Enviar_String_Bluetooth(String datos)
+    {
+        final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Bluetooth_Conectado == true && Bluetooth_Encendido == true)
+        {
+            connectedThread.enviar_string(datos);
+
+            Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
+        } else
+        {
+            mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
+        }
     }
 /*
     @Override
@@ -356,15 +395,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void LlenarUsuarios()
     {
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Paisaje 1","Vamos Argentina 1",R.drawable.ic_launcher_foreground));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Paisaje 2","Vamos Argentina 2",R.drawable.ic_launcher_foreground));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Paisaje 3","Vamos Argentina 3",R.drawable.ic_launcher_foreground));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Paisaje 4","Vamos Argentina 4",R.drawable.ic_launcher_foreground));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Paisaje 1","Vamos Argentina 1",R.drawable.ic_launcher_foreground));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Paisaje 2","Vamos Argentina 2",R.drawable.ic_launcher_foreground));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Paisaje 3","Vamos Argentina 3",R.drawable.ic_launcher_foreground));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Paisaje 4","Vamos Argentina 4",R.drawable.ic_launcher_foreground));
-
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_launcher_foreground));
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("German","12345678",R.drawable.ic_launcher_foreground));
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Facundo","34500600",R.drawable.ic_launcher_foreground));
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Gaston","30266999",R.drawable.ic_launcher_foreground));
     }
 
     /*

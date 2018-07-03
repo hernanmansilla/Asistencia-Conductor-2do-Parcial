@@ -1,20 +1,24 @@
 package com.example.herna.asistenciaconductor;
 
-public class DatosRecyclerViewPrincipal
+import android.widget.ImageView;
+
+public class DatosListViewInfracciones
 {
     private int Id;
-    private String Nombre;
-    private String DNI;
-    private int Imagen_titulo;
+    private int Velocidad_Infraccion;
+    private String Latitud_Infraccion;
+    private String Longitud_Infraccion;
+    private ImageView Imagen_Maps;
 
     //**********************************************************************************************
     // Constructor de la clase
     //**********************************************************************************************
-    public DatosRecyclerViewPrincipal(String name, String dni ,int imag)
+    public DatosListViewInfracciones(int vel, String lat, String longi, ImageView imagen)
     {
-        Nombre = name;
-        DNI = dni;
-        Imagen_titulo = imag;
+        Velocidad_Infraccion = vel;
+        Latitud_Infraccion = lat;
+        Longitud_Infraccion = longi;
+        Imagen_Maps = imagen;
     }
 
     //**********************************************************************************************
@@ -25,36 +29,33 @@ public class DatosRecyclerViewPrincipal
         return Id;
     }
 
-    //**********************************************************************************************
-    // Set el id
-    //**********************************************************************************************
-    public void setId(int id)
+    public int getVelocidad_Infraccion()
     {
-        Id=id;
+        return Velocidad_Infraccion;
     }
 
     //**********************************************************************************************
     // Obtengo el nombre
     //**********************************************************************************************
-    public String getNombre()
+    public String getLatitud_Infraccion()
     {
-        return Nombre;
+        return Latitud_Infraccion;
     }
 
     //**********************************************************************************************
-    // Obtengo lo que debe
+    // Obtengo la descripcion
     //**********************************************************************************************
-    public String getDesc()
+    public String getLongitud_Infraccion()
     {
-        return DNI;
+        return Longitud_Infraccion;
     }
 
     //**********************************************************************************************
-    // Obtengo una imagen
+    // Obtengo el monto a favor
     //**********************************************************************************************
-    public int getImagen()
+    public ImageView getImagen()
     {
-        return Imagen_titulo;
+        return Imagen_Maps;
     }
 
 }
