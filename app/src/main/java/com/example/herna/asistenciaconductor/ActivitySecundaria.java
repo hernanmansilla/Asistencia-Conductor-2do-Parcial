@@ -18,12 +18,19 @@ public class ActivitySecundaria extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_secundaria);
 
+        // Obtengo el usuario que corresponde al item seleciconado
+        Bundle extras = getIntent().getExtras();
+        assert extras != null;
+        int Velocidad_infraccion = extras.getInt("Velocidad_infraccion");
+        String Latitud_infraccion = extras.getString("Latitud_infraccion");
+        String Longitud_infraccion = extras.getString("Longitud_infraccion");
+
         ListaInfracciones = findViewById(R.id.ListaInfracciones);
 
         ListaDesc = new ArrayList<DatosListViewInfracciones>();
 
         // Inserto en mi objeto para mostrar en el listview
-    //    ListaDesc.add(new DatosListViewInfracciones(Nombre_usu, Descripcion_BD, Afavor_BD));
+        ListaDesc.add(new DatosListViewInfracciones(Velocidad_infraccion, Latitud_infraccion, Longitud_infraccion,R.drawable.ic_place));
 
         // Instancio mi clase creada adaptador con los datos ya precargados
         AdaptadorListViewInfracciones adaptador1 = new AdaptadorListViewInfracciones(getApplicationContext(),ListaDesc);

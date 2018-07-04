@@ -8,17 +8,17 @@ public class DatosListViewInfracciones
     private int Velocidad_Infraccion;
     private String Latitud_Infraccion;
     private String Longitud_Infraccion;
-    private ImageView Imagen_Maps;
+    private int Imagen_Ubicacion;
 
     //**********************************************************************************************
     // Constructor de la clase
     //**********************************************************************************************
-    public DatosListViewInfracciones(int vel, String lat, String longi, ImageView imagen)
+    public DatosListViewInfracciones(int vel, String lat, String longi, int imagen)
     {
         Velocidad_Infraccion = vel;
         Latitud_Infraccion = lat;
         Longitud_Infraccion = longi;
-        Imagen_Maps = imagen;
+        Imagen_Ubicacion = imagen;
     }
 
     //**********************************************************************************************
@@ -53,9 +53,9 @@ public class DatosListViewInfracciones
     //**********************************************************************************************
     // Obtengo el monto a favor
     //**********************************************************************************************
-    public ImageView getImagen()
+    public int getImagen()
     {
-        return Imagen_Maps;
+        return Imagen_Ubicacion;
     }
 
 }

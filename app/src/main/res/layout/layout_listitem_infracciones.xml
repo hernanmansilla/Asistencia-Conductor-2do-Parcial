@@ -69,7 +69,7 @@
         android:textSize="25sp" />
 
     <ImageView
-        android:id="@+id/imagen_download"
+        android:id="@+id/imagen_ubicar"
         android:layout_width="81dp"
         android:layout_height="106dp"
         android:layout_alignParentEnd="true"

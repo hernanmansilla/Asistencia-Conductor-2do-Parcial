@@ -13,6 +13,8 @@ package com.example.herna.asistenciaconductor;
 
 //https://www.youtube.com/watch?v=ipr7Y7lcYgA
 
+// Geocerca https://www.mytrendin.com/android-geofences-google-api/
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.Notification;
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     static byte [] Chofer_RX_BT;
     static byte [] DNI_RX_BT;
     static byte [] KM_Recorridos_RX_BT;
-    static byte[] Cantidad_Infracciones_RX_BT;
+    static byte[] Velocidad_infraccion_RX_BT;
     static byte [] Latitud_Infraccion_RX_BT;
     static byte [] Longitud_Infraccion_RX_BT;
     static int Indice_RX_BT=0;
@@ -143,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
        // Chofer_RX_BT = new byte[10];
         DNI_RX_BT = new byte[8];
         KM_Recorridos_RX_BT = new byte[2];
-        Cantidad_Infracciones_RX_BT = new byte[2];
+        Velocidad_infraccion_RX_BT = new byte[2];
         Latitud_Infraccion_RX_BT = new byte[10];
         Longitud_Infraccion_RX_BT = new byte[10];
 
@@ -164,12 +166,11 @@ public class MainActivity extends AppCompatActivity {
             {
                 finish();
                 Intent Activity2 = new Intent(MainActivity.this, ActivitySecundaria.class);
-
                 // Le paso el nombre y el estado del logueo del usuario correspondiente al item selecionado
-             //   Activity2.putExtra("Nombre_usu", ListaDatos.get(position).getNombre());
-             //   Activity2.putExtra("Estado_logueo_usu", estado_logueado);
+                Activity2.putExtra("Velocidad_infraccion",Velocidad_infraccion_RX_BT);
+                Activity2.putExtra("Latitud_infraccion", Latitud_Infraccion_RX_BT);
+                Activity2.putExtra("Longitud_infraccion", Longitud_Infraccion_RX_BT);
                 startActivity(Activity2);
-
             }
 
             @Override
@@ -399,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
     private void LlenarUsuarios()
     {
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_file_download_red));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("German","12345678",R.drawable.ic_check_box));
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("German","12345678",R.drawable.ic_file_download_red));
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Facundo","34500600",R.drawable.ic_file_download_red));
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Gaston","30266999",R.drawable.ic_file_download_red));
     }
@@ -574,7 +575,7 @@ public class MainActivity extends AppCompatActivity {
 
                 case 5:
 
-                    Cantidad_Infracciones_RX_BT[Indice_RX_BT] = dato;
+                    Velocidad_infraccion_RX_BT[Indice_RX_BT] = dato;
                     Indice_RX_BT++;
 
                     if(Indice_RX_BT>=2)
@@ -616,7 +617,7 @@ public class MainActivity extends AppCompatActivity {
                     {
                         estado_rx_bluetooth=0;
                         Datos_Recibidos_BT=true;
-                     //   Analizar_datos_Bluetooth();
+                        Analizar_datos_Bluetooth();
                         // Recibi bien los datos
                         //mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
                     }
@@ -631,7 +632,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-    /*    public void Analizar_datos_Bluetooth()
+        public void Analizar_datos_Bluetooth()
         {
             int i;
 
@@ -642,14 +643,22 @@ public class MainActivity extends AppCompatActivity {
                     switch(i)
                     {
                         case 0:
-                            ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_launcher_foreground));
+                            ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_check_box));
                             break;
 
-
+                        case 1:
+                            ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("German","12345678",R.drawable.ic_check_box));
+                            break;
+                        case 2:
+                            ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Facundo","34500600",R.drawable.ic_check_box));
+                            break;
+                        case 3:
+                            ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Gaston","30266999",R.drawable.ic_check_box));
+                            break;
                     }
                   }
             }
-        }*/
+        }
     }
 
 
