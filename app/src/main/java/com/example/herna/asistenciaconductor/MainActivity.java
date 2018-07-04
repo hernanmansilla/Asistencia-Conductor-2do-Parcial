@@ -65,7 +65,7 @@ import static com.example.herna.asistenciaconductor.Ubicacion.LocationManager;
 import static com.example.herna.asistenciaconductor.Ubicacion.lc;
 
 public class MainActivity extends AppCompatActivity {
-    private ArrayList<DatosRecyclerViewPrincipal> ListaUsuariosPrincipal;
+    static public ArrayList<DatosRecyclerViewPrincipal> ListaUsuariosPrincipal;
     private RecyclerView recyclerUsuarios;
     private static final int ENABLE_BLUETOOTH = 1;
     private static final int SOLICITA_CONEXION = 2;
@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
     static String DNI_Chofer=null;
     static String Latitud_Infraccion=null;
     static String Longitud_Infraccion=null;
+    static public int CANTIDAD_MAXIMA_CHOFERES=4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,7 +187,8 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Bluetooth_Encendido = true;
 
-                    if (Bluetooth_Conectado == false) {
+                    if (Bluetooth_Conectado == false)
+                    {
                         Intent activityListaDispositivos = new Intent(MainActivity.this, ListaDispositivos.class);
                         startActivityForResult(activityListaDispositivos, SOLICITA_CONEXION);
                     } else {
@@ -198,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
                     case 0:
 
                         Enviar_String_Bluetooth("<S34235547>");
+                        Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
               /*          if (Bluetooth_Conectado == true && Bluetooth_Encendido == true)
                         {
                             connectedThread.enviar_string(">S34235547<");
@@ -395,10 +398,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void LlenarUsuarios()
     {
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_launcher_foreground));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("German","12345678",R.drawable.ic_launcher_foreground));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Facundo","34500600",R.drawable.ic_launcher_foreground));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Gaston","30266999",R.drawable.ic_launcher_foreground));
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_file_download_red));
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("German","12345678",R.drawable.ic_check_box));
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Facundo","34500600",R.drawable.ic_file_download_red));
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Gaston","30266999",R.drawable.ic_file_download_red));
     }
 
     /*
@@ -613,6 +616,7 @@ public class MainActivity extends AppCompatActivity {
                     {
                         estado_rx_bluetooth=0;
                         Datos_Recibidos_BT=true;
+                     //   Analizar_datos_Bluetooth();
                         // Recibi bien los datos
                         //mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
                     }
@@ -624,11 +628,28 @@ public class MainActivity extends AppCompatActivity {
                     break;
 
                     default: break;
-
-
             }
         }
 
+    /*    public void Analizar_datos_Bluetooth()
+        {
+            int i;
+
+            for(i=0;i<=CANTIDAD_MAXIMA_CHOFERES;i++)
+            {
+                if(DNI_Chofer.equals(ListaUsuariosPrincipal.get(i).getDNI()))
+                {
+                    switch(i)
+                    {
+                        case 0:
+                            ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_launcher_foreground));
+                            break;
+
+
+                    }
+                  }
+            }
+        }*/
     }
 
 

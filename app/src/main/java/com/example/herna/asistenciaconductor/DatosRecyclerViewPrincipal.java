@@ -1,20 +1,23 @@
 package com.example.herna.asistenciaconductor;
 
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
+
 public class DatosRecyclerViewPrincipal
 {
     private int Id;
     private String Nombre;
     private String DNI;
-    private int Imagen_titulo;
+    private int Imagen_download;
 
     //**********************************************************************************************
     // Constructor de la clase
     //**********************************************************************************************
-    public DatosRecyclerViewPrincipal(String name, String dni ,int imag)
+    public DatosRecyclerViewPrincipal(String name, String dni , int imag)
     {
         Nombre = name;
         DNI = dni;
-        Imagen_titulo = imag;
+        Imagen_download = imag;
     }
 
     //**********************************************************************************************
@@ -23,6 +26,14 @@ public class DatosRecyclerViewPrincipal
     public int getId()
     {
         return Id;
+    }
+
+    //**********************************************************************************************
+    // Obtengo el DNI
+    //**********************************************************************************************
+    public String getDNI()
+    {
+        return DNI;
     }
 
     //**********************************************************************************************
@@ -54,7 +65,7 @@ public class DatosRecyclerViewPrincipal
     //**********************************************************************************************
     public int getImagen()
     {
-        return Imagen_titulo;
+        return Imagen_download;
     }
 
 }

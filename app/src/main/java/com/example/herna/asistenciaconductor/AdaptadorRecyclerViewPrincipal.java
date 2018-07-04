@@ -1,5 +1,6 @@
 package com.example.herna.asistenciaconductor;
 
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
@@ -36,9 +37,10 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
     @Override
     public void onBindViewHolder(ViewHolderPrincipal holder, final int position)
     {
-        holder.imagen.setImageResource(ListaUsuariosPrincipal.get(position).getImagen());
+    //    holder.imagen.setImageResource(ListaUsuariosPrincipal.get(position).getImagen());
         holder.imageName.setText(ListaUsuariosPrincipal.get(position).getNombre());
         holder.imageDNI.setText(ListaUsuariosPrincipal.get(position).getDesc());
+        holder.imagen_download.setImageResource(ListaUsuariosPrincipal.get(position).getImagen());
     }
 
     @Override

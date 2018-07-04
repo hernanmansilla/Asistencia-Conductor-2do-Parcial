@@ -23,7 +23,7 @@ public class ActivitySecundaria extends AppCompatActivity {
         ListaDesc = new ArrayList<DatosListViewInfracciones>();
 
         // Inserto en mi objeto para mostrar en el listview
-        ListaDesc.add(new DatosListViewInfracciones(Nombre_usu, Descripcion_BD, Afavor_BD));
+    //    ListaDesc.add(new DatosListViewInfracciones(Nombre_usu, Descripcion_BD, Afavor_BD));
 
         // Instancio mi clase creada adaptador con los datos ya precargados
         AdaptadorListViewInfracciones adaptador1 = new AdaptadorListViewInfracciones(getApplicationContext(),ListaDesc);
