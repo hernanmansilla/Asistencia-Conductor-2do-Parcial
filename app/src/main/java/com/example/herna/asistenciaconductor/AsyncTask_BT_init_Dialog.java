@@ -14,18 +14,15 @@ import android.widget.Toast;
 
 import java.io.IOException;
 
-import static com.example.herna.asistenciaconductor.AsyncTask_BTinit_Dialog.connectedThread;
-import static com.example.herna.asistenciaconductor.MainActivity.MAC;
-import static com.example.herna.asistenciaconductor.MainActivity.NOTIF_ALERTA_ID;
 import static com.example.herna.asistenciaconductor.MainActivity.mDevice;
 import static com.example.herna.asistenciaconductor.MainActivity.mUUID;
 import static com.example.herna.asistenciaconductor.MainActivity.pDialog;
 
 
-class AsyncTask_BTinit_Dialog extends AsyncTask<Void, Integer, Boolean>
+public class AsyncTask_BT_init_Dialog extends AsyncTask<Void, Integer, Boolean>
 {
     BluetoothSocket mSocket = null;
-    static public MainActivity.ConnectedThread connectedThread;
+    public ConexionBluetooth conexionBluetooth;
     static public AsyncTask_BT_RX Bluetooth_RX;
 
 
@@ -38,8 +35,8 @@ class AsyncTask_BTinit_Dialog extends AsyncTask<Void, Integer, Boolean>
             // Inicio la coexion Bluetooth
             mSocket = mDevice.createRfcommSocketToServiceRecord(mUUID);
             mSocket.connect();
-            connectedThread = new MainActivity.ConnectedThread(mSocket);
-            connectedThread.start();
+            conexionBluetooth = new ConexionBluetooth(mSocket);
+            conexionBluetooth.start();
 
         } catch (IOException e)
         {
@@ -73,7 +70,7 @@ class AsyncTask_BTinit_Dialog extends AsyncTask<Void, Integer, Boolean>
         {
             @Override
             public void onCancel(DialogInterface dialog) {
-                AsyncTask_BTinit_Dialog.this.cancel(true);
+                AsyncTask_BT_init_Dialog.this.cancel(true);
             }
         });
 
@@ -90,7 +87,7 @@ class AsyncTask_BTinit_Dialog extends AsyncTask<Void, Integer, Boolean>
             MainActivity.Bluetooth_Conectado=true;
 
             // Inicio la escucha de lo que me llega por Bluetooth
-            Bluetooth_RX = new AsyncTask_BT_RX();
+            Bluetooth_RX = new AsyncTask_BT_RX(conexionBluetooth);
             Bluetooth_RX.execute();
         }
       //  else
@@ -101,33 +98,10 @@ class AsyncTask_BTinit_Dialog extends AsyncTask<Void, Integer, Boolean>
     protected void onCancelled() {
         //Toast.makeText(MainActivity.this, "Tarea cancelada!", Toast.LENGTH_SHORT).show();
     }
-}
 
-class AsyncTask_BT_RX extends AsyncTask<Void, Integer, Boolean>
-{
-    static public AsyncTask_BT_RX Bluetooth_RX;
-    static public boolean Datos_Recibidos_BT;
-
-    @Override
-    protected Boolean doInBackground(Void... voids)
+    public ConexionBluetooth Get_Conexion()
     {
-        // Me quedo escuchando lo que viene por Bluetooth
-        connectedThread.run();
-        return true;
-    }
-
-    @Override
-    protected void onPostExecute(Boolean result)
-    {
-        if(result)
-        {
-            // Inicio la escucha de lo que me llega por Bluetooth
-      //      mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
-            Datos_Recibidos_BT = true;
-            Bluetooth_RX = new AsyncTask_BT_RX();
-            Bluetooth_RX.execute();
-        }
-
-
+        return conexionBluetooth;
     }
 }
+
