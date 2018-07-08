@@ -23,11 +23,9 @@ public class ActivitySecundaria extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         assert extras != null;
         int Cantidad_infracciones = extras.getInt("Cantidad_infracciones");
-        int Velocidad_infraccion = extras.getInt("Velocidad_infraccion");
+        byte [] Velocidad_infraccion = extras.getByteArray("Velocidad_infraccion");
         String Latitud_infraccion = extras.getString("Latitud_infraccion");
         String Longitud_infraccion = extras.getString("Longitud_infraccion");
-
-
 
         ListaInfracciones = findViewById(R.id.ListaInfracciones);
 
@@ -35,8 +33,8 @@ public class ActivitySecundaria extends AppCompatActivity {
 
         for(i=0;i<Cantidad_infracciones;i++)
         {
-        // Inserto en mi objeto para mostrar en el listview
-        ListaDesc.add(new DatosListViewInfracciones(Velocidad_infraccion, Latitud_infraccion, Longitud_infraccion));
+            // Inserto en mi objeto para mostrar en el listview
+            ListaDesc.add(new DatosListViewInfracciones(Velocidad_infraccion[i], Latitud_infraccion, Longitud_infraccion));
         }
 
         // Instancio mi clase creada adaptador con los datos ya precargados
