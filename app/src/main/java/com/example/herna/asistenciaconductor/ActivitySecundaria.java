@@ -12,6 +12,7 @@ public class ActivitySecundaria extends AppCompatActivity {
 
     ArrayList<DatosListViewInfracciones> ListaDesc;
     private ListView ListaInfracciones;
+    private int i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,16 +22,22 @@ public class ActivitySecundaria extends AppCompatActivity {
         // Obtengo el usuario que corresponde al item seleciconado
         Bundle extras = getIntent().getExtras();
         assert extras != null;
+        int Cantidad_infracciones = extras.getInt("Cantidad_infracciones");
         int Velocidad_infraccion = extras.getInt("Velocidad_infraccion");
         String Latitud_infraccion = extras.getString("Latitud_infraccion");
         String Longitud_infraccion = extras.getString("Longitud_infraccion");
+
+
 
         ListaInfracciones = findViewById(R.id.ListaInfracciones);
 
         ListaDesc = new ArrayList<DatosListViewInfracciones>();
 
+        for(i=0;i<Cantidad_infracciones;i++)
+        {
         // Inserto en mi objeto para mostrar en el listview
-        ListaDesc.add(new DatosListViewInfracciones(Velocidad_infraccion, Latitud_infraccion, Longitud_infraccion,R.drawable.ic_place));
+        ListaDesc.add(new DatosListViewInfracciones(Velocidad_infraccion, Latitud_infraccion, Longitud_infraccion));
+        }
 
         // Instancio mi clase creada adaptador con los datos ya precargados
         AdaptadorListViewInfracciones adaptador1 = new AdaptadorListViewInfracciones(getApplicationContext(),ListaDesc);
@@ -39,6 +46,6 @@ public class ActivitySecundaria extends AppCompatActivity {
         ListaInfracciones.setAdapter(adaptador1);
 
         // Registro los controles para el menu contextual, detecta la pulsacion prolongada
-        registerForContextMenu(ListaInfracciones);
+      //  registerForContextMenu(ListaInfracciones);
     }
 }

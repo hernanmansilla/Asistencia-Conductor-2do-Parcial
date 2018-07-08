@@ -13,12 +13,12 @@ public class DatosListViewInfracciones
     //**********************************************************************************************
     // Constructor de la clase
     //**********************************************************************************************
-    public DatosListViewInfracciones(int vel, String lat, String longi, int imagen)
+    public DatosListViewInfracciones(int vel, String lat, String longi)//, int imagen)
     {
         Velocidad_Infraccion = vel;
         Latitud_Infraccion = lat;
         Longitud_Infraccion = longi;
-        Imagen_Ubicacion = imagen;
+     //   Imagen_Ubicacion = imagen;
     }
 
     //**********************************************************************************************

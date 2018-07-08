@@ -19,22 +19,24 @@
 
         <TextView
             android:id="@+id/imagen_nombre"
-            android:layout_width="190dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="18dp"
-            android:layout_toStartOf="@+id/imagen_download"
+            android:layout_marginStart="108dp"
+            android:layout_marginTop="27dp"
             android:text="NOMBRE"
             android:textColor="#000"
-            android:textSize="30dp" />
+            android:textSize="30dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/DNI"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/imagen"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="98dp"
+            android:layout_below="@+id/imagen_nombre"
+            android:layout_marginEnd="83dp"
             android:text="34235547"
             android:textColor="#000"
             android:textSize="25sp" />
@@ -43,21 +45,21 @@
             android:id="@+id/DNI_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/imagen"
+            android:layout_alignBottom="@+id/DNI"
             android:layout_alignStart="@+id/imagen_nombre"
             android:text="DNI:"
             android:textColor="#000"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/imagen_download"
-            android:layout_width="60dp"
-            android:layout_height="85dp"
+            android:layout_width="59dp"
+            android:layout_height="73dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:fillColor="#FF000444"
-            android:src="@drawable/ic_file_download_red"
-            />
+            android:src="@drawable/ic_file_download_red" />
 
     </RelativeLayout>
 

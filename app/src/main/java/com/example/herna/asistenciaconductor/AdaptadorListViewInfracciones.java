@@ -63,12 +63,12 @@ public class AdaptadorListViewInfracciones extends BaseAdapter
         TextView Lista_Velocidad = item.findViewById(R.id.Velocidad);
         TextView Lista_Latitud = item.findViewById(R.id.Latitud);
         TextView Lista_Longitud = item.findViewById(R.id.Longitud);
-        ImageView Imagen_mapa = item.findViewById(R.id.imagen_ubicar);
+    //    ImageView Imagen_mapa = item.findViewById(R.id.imagen_ubicar);
 
-        Lista_Velocidad.setText(ListaObjetosPrincipal.get(position).getVelocidad_Infraccion());
-        Lista_Latitud.setText(String.valueOf(ListaObjetosPrincipal.get(position).getLatitud_Infraccion()));
-        Lista_Longitud.setText(String.valueOf(ListaObjetosPrincipal.get(position).getLongitud_Infraccion()));
-        Imagen_mapa.setImageResource(ListaObjetosPrincipal.get(position).getImagen());
+        Lista_Velocidad.setText(String.valueOf(ListaObjetosPrincipal.get(position).getVelocidad_Infraccion()));
+        Lista_Latitud.setText(ListaObjetosPrincipal.get(position).getLatitud_Infraccion());
+        Lista_Longitud.setText(ListaObjetosPrincipal.get(position).getLongitud_Infraccion());
+    //    Imagen_mapa.setImageResource(ListaObjetosPrincipal.get(position).getImagen());
 
         return(item);
     }

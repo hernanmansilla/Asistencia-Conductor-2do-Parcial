@@ -2,11 +2,14 @@ package com.example.herna.asistenciaconductor;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -104,7 +107,6 @@ class AsyncTask_BT_RX extends AsyncTask<Void, Integer, Boolean>
 {
     static public AsyncTask_BT_RX Bluetooth_RX;
     static public boolean Datos_Recibidos_BT;
-   // NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
     @Override
     protected Boolean doInBackground(Void... voids)
