@@ -1,17 +1,8 @@
 package com.example.herna.asistenciaconductor;
 
-import android.app.Activity;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
-
 import java.io.IOException;
 
 import static com.example.herna.asistenciaconductor.MainActivity.mDevice;
@@ -25,14 +16,15 @@ public class AsyncTask_BT_init_Dialog extends AsyncTask<Void, Integer, Boolean>
     public ConexionBluetooth conexionBluetooth;
     static public AsyncTask_BT_RX Bluetooth_RX;
 
-
+    // Funcion que ejecuta la tarea principal de la AsyncTask
     @Override
     protected Boolean doInBackground(Void... params)
     {
+
         publishProgress(1*10);
         try
         {
-            // Inicio la coexion Bluetooth
+            // Inicio la conexion Bluetooth
             mSocket = mDevice.createRfcommSocketToServiceRecord(mUUID);
             mSocket.connect();
             conexionBluetooth = new ConexionBluetooth(mSocket);
@@ -40,12 +32,11 @@ public class AsyncTask_BT_init_Dialog extends AsyncTask<Void, Integer, Boolean>
 
         } catch (IOException e)
         {
-            //      e.printStackTrace();
-         //   Toast.makeText(MainActivity, "Error al conectar", Toast.LENGTH_SHORT).show();
             pDialog.dismiss();
             return false;
         }
 
+        // Seteo el progreso de la barra
         publishProgress(10*10);
 
         if(isCancelled())
@@ -62,10 +53,11 @@ public class AsyncTask_BT_init_Dialog extends AsyncTask<Void, Integer, Boolean>
         pDialog.setProgress(progreso);
     }
 
+    // Funcion que se ejecuta antes de ejecutar la tarea principal
     @Override
     protected void onPreExecute()
     {
-
+        // Funcion que se ejecuta antes de la tarea, creo la barra de progreso
         pDialog.setOnCancelListener(new DialogInterface.OnCancelListener()
         {
             @Override
@@ -78,11 +70,14 @@ public class AsyncTask_BT_init_Dialog extends AsyncTask<Void, Integer, Boolean>
         pDialog.show();
     }
 
+    // Funcion que se ejecuta una vez finalizado la ejecucion de la tarea principal
     @Override
     protected void onPostExecute(Boolean result)
     {
         if(result)
         {
+            // Una vez que se conecte lanzo una nueva AsyncTask para escuchar los datos
+            // Bluetooth que recibo
             pDialog.dismiss();
             MainActivity.Bluetooth_Conectado=true;
 
@@ -90,8 +85,6 @@ public class AsyncTask_BT_init_Dialog extends AsyncTask<Void, Integer, Boolean>
             Bluetooth_RX = new AsyncTask_BT_RX(conexionBluetooth);
             Bluetooth_RX.execute();
         }
-      //  else
-     //       Toast.makeText(this., "Error al conectar", Toast.LENGTH_SHORT).show();
     }
 
     @Override

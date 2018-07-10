@@ -9,12 +9,56 @@
         <ListView
             android:id="@+id/ListaInfracciones"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="341dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="0dp">
+            android:layout_marginTop="0dp"/>
 
-        </ListView>
+        <EditText
+            android:id="@+id/Latitud"
+            android:layout_width="238dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/Longitud"
+            android:layout_alignParentEnd="true"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="" />
+
+        <EditText
+            android:id="@+id/Longitud"
+            android:layout_width="238dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/Longitud_text"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/Latitud_text"
+            android:layout_width="145dp"
+            android:layout_height="45dp"
+            android:layout_above="@+id/Longitud"
+            android:layout_alignParentStart="true"
+            android:text="Latitud" />
+
+        <TextView
+            android:id="@+id/Longitud_text"
+            android:layout_width="145dp"
+            android:layout_height="45dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="81dp"
+            android:text="Longitud" />
+
+        <Button
+            android:id="@+id/button_GPS"
+            android:layout_width="145dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:text="ACTUALIZAR GPS" />
+
 
 
 </RelativeLayout>

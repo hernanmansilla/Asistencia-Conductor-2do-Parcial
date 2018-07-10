@@ -15,7 +15,6 @@ import static com.example.herna.asistenciaconductor.MainActivity.mNotificationMa
 
 public class ConexionBluetooth extends Thread
 {
-
     public byte[] buffer_rx_BT = new byte[256];  // buffer store for the stream
     public int estado_rx_bluetooth=0;
     int Indice_RX_BT=0;
@@ -27,19 +26,18 @@ public class ConexionBluetooth extends Thread
     static public byte []  Velocidad_infraccion_RX_BT = new byte[10];
     static public byte [] Latitud_Infraccion_RX_BT= new byte[10];
     static public byte [] Longitud_Infraccion_RX_BT= new byte[10];
-    public int CANTIDAD_MAXIMA_CHOFERES=4;
     int i;
 
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
 
+    // Constructor de la clase
     public ConexionBluetooth(BluetoothSocket socket)
     {
+        // Creo los flujos donde se van a transferir la comunicacion Bluetooth
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
 
-        // Get the input and output streams, using temp objects because
-        // member streams are final
         try {
             tmpIn = socket.getInputStream();
             tmpOut = socket.getOutputStream();
@@ -50,29 +48,30 @@ public class ConexionBluetooth extends Thread
         mmOutStream = tmpOut;
     }
 
+    // Funcion que queda a la escucha de la llegada de datos Bluetooth
     public void run()
     {
         boolean espero_datos = true;
         int bytes_recibidos; // bytes returned from read()
 
-        // Keep listening to the InputStream until an exception occurs
         while (espero_datos == true) {
             try {
-                // Read from the InputStream
+                // Leo del InputStream
                 bytes_recibidos = mmInStream.read(buffer_rx_BT);
 
                 if (bytes_recibidos > 0)
                 {
                     bytes_recibidos = buffer_rx_BT[2];
+
                     // Recorro los datos hasta el byte que me indica la cantidad que tiene el buffer
                     for (i = 0; i <= bytes_recibidos; i++)
                     {
+                        // Maquina de estado para la recepcion de los bytes
                         Recepcion_Datos_Bluetooth(buffer_rx_BT[i]);
                         buffer_rx_BT[i] = 0;
                     }
                     estado_rx_bluetooth = 0;
                 }
-
             } catch (IOException e) {
                 //    break;
             }
@@ -80,7 +79,7 @@ public class ConexionBluetooth extends Thread
         }
     }
 
-    /* Call this from the main activity to send data to the remote device */
+    // Funcion para enviar un array de bytes
     public void enviar_byte(byte[] bytes)
     {
         try {
@@ -89,7 +88,7 @@ public class ConexionBluetooth extends Thread
         }
     }
 
-    /* Call this from the main activity to send data to the remote device */
+    // Funcion para enviar un String
     public void enviar_string(String datos)
     {
         byte[] msgBuffer = datos.getBytes();
@@ -99,6 +98,7 @@ public class ConexionBluetooth extends Thread
         }
     }
 
+    // Maquina de estados para la recepcion de cada byte entrante
     public void Recepcion_Datos_Bluetooth(byte dato)
     {
         switch (estado_rx_bluetooth) {

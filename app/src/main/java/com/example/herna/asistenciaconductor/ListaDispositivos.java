@@ -21,8 +21,6 @@ public class ListaDispositivos extends ListActivity
     private BluetoothAdapter BluetoothAdapter = null;
     public ArrayAdapter<String> ArrayBluetooth;
     static String ENDERECO_MAC = null;
-    // Register the BroadcastReceiver
-  //  IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -47,7 +45,6 @@ public class ListaDispositivos extends ListActivity
             }
             setListAdapter(ArrayBluetooth);
         }
-    //    registerReceiver(bReciever, filter);
     }
 
     @Override
@@ -64,26 +61,4 @@ public class ListaDispositivos extends ListActivity
         setResult(RESULT_OK,retornoMac);
         finish();
     }
-
-/*
-    private final BroadcastReceiver bReciever = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action))
-            {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // Create a new device item
-                //  DeviceItem newDevice = new DeviceItem(device.getName(), device.getAddress(), "false");
-                // Add it to our adapter
-                //  ArrayBluetooth.add(newDevice);
-                String nombreBT = device.getName();
-                String macBT = device.getAddress();
-                ArrayBluetooth.add(nombreBT + "\n" + macBT);
-            }
-            setListAdapter(ArrayBluetooth);
-        }
-    };*/
 }

@@ -27,56 +27,59 @@ public class Ubicacion implements LocationListener
 {
     private Context contexto;
     static public LocationManager LocationManager;
-    //String proveedor;
     static public boolean gps_enabled;
     static public boolean network_enabled;
     static public String Latitud_GPS=null;
     static public String Longitud_GPS=null;
     static public Location lc;
-    public PendingIntent onLocationChanged;
 
+    // Constructor de la Clase
     public Ubicacion(Context ctx)
     {
         this.contexto = ctx;
         LocationManager = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
 
-            if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        // Pregunto si tengo permiso para usar el GPS
+        if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions((Activity) this.contexto, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+            Toast.makeText(ctx, "No tiene permisos para usar el GPS ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        else
             {
-                ActivityCompat.requestPermissions((Activity) this.contexto, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-                Toast.makeText(ctx, "No tiene permisos para usar el GPS ", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            else
+            if(checkLocation())
+            {
+                // Si tengo el GPS habilitado
+                if(gps_enabled)
                 {
-                if(checkLocation())
-                {
-                    if(gps_enabled)
-                    {
-                        // Hago la peticion de tomar 1 segundo de muestras de GPS
-                        LocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
-                        // Obtengo la ultima posicion valida
-                        lc = LocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    }
-                    else if (network_enabled)
-                    {
-                        // Hago la peticion de tomar 1 segundo de muestras de GPS
-                        LocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
-                        // Obtengo la ultima posicion valida
-                        lc = LocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    }
-
-                    if(lc != null)
-                    {
-                        Latitud_GPS = Double.toString(lc.getLatitude());
-                        Longitud_GPS = Double.toString(lc.getLongitude());
-                    }
-
-                    Toast.makeText(ctx, "Ultima posicion valida" + Latitud_GPS, Toast.LENGTH_SHORT).show();
+                    // Hago la peticion para tomar muestras cada 1 segundo por GPS
+                    LocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+                    // Obtengo la ultima posicion valida
+                    lc = LocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 }
+                else if (network_enabled)
+                {
+                    // Hago la peticion para tomar muestras cada 1 segundo por Internet
+                    LocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
+                    // Obtengo la ultima posicion valida
+                    lc = LocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                }
+
+                // Obtengo la ultima posicion valida
+                if(lc != null)
+                {
+                    Latitud_GPS = Double.toString(lc.getLatitude());
+                    Longitud_GPS = Double.toString(lc.getLongitude());
+                }
+
+                Toast.makeText(ctx, "Ultima posicion valida", Toast.LENGTH_SHORT).show();
             }
+        }
     }
 
+    // Funcion que se llama cada vez que cambio la posicion
     @Override
     public void onLocationChanged (Location location)
     {
@@ -86,49 +89,55 @@ public class Ubicacion implements LocationListener
         }
     }
 
+    // Funcion que monitore los cambios de estado del GPS
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras)
     {
         switch (status)
         {
             case LocationProvider.AVAILABLE:
-           //     Toast.makeText(contexto_gral, "GPS habilitado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(contexto_gral, "GPS habilitado", Toast.LENGTH_SHORT).show();
                 break;
 
             case LocationProvider.OUT_OF_SERVICE:
-            //    Toast.makeText(contexto_gral, "GPS deshabilitado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(contexto_gral, "GPS deshabilitado", Toast.LENGTH_SHORT).show();
                 break;
 
             case LocationProvider.TEMPORARILY_UNAVAILABLE:
-            //    Toast.makeText(contexto_gral, "GPS temporalmente deshabilitado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(contexto_gral, "GPS temporalmente deshabilitado", Toast.LENGTH_SHORT).show();
                 break;
 
         }
     }
 
+    // Funcion que se llama cuando el GPS se habilita
     @Override
     public void onProviderEnabled(String provider)
     {
         Toast.makeText(contexto_gral, "GPS habilitado", Toast.LENGTH_SHORT).show();
     }
 
+    // Funcion que se llama cuando el GPS se deshabilita
     @Override
     public void onProviderDisabled(String provider) {
         Toast.makeText(contexto_gral, "GPS Deshabilitado", Toast.LENGTH_SHORT).show();
 
     }
 
+    // Funcion para testear si esta habilitado el GPS
     private boolean checkLocation()
     {
+        // En caso de que no este habilitado el GPS llamo a un metodo para ir a la pantalla Setting y habilitarlo
         if (!isLocationEnabled())
             showAlert();
         return isLocationEnabled();
     }
 
+    // Funcion para llamar a un AlertDialog para permitir la habilitacion del GPS
     private void showAlert()
     {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this.contexto);
-        dialog.setTitle("Enable Location")
+                 dialog.setTitle("Enable Location")
                 .setMessage("Su ubicación esta desactivada.\npor favor active su ubicación " +
                         "usa esta app")
                 .setPositiveButton("SI", new DialogInterface.OnClickListener()
@@ -138,8 +147,6 @@ public class Ubicacion implements LocationListener
                     {
                         Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         contexto_gral.startActivity(myIntent);
-                      // Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                      // mainActivity.startActivityForResult(myIntent,2);
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener()
@@ -152,6 +159,7 @@ public class Ubicacion implements LocationListener
         dialog.show();
     }
 
+    // Funcion para testear el proveedor de la ubicacion de GPS
     private boolean isLocationEnabled()
     {
         gps_enabled= LocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);

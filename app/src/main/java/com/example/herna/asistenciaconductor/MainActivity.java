@@ -43,6 +43,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -80,22 +81,17 @@ public class MainActivity extends AppCompatActivity
     static public BluetoothDevice mDevice = null;
     BluetoothAdapter mBluetoothAdapter = null;
     AsyncTask_BT_init_Dialog Bluetooth_init;
-    // static public AsyncTask_BT_RX Bluetooth_RX;
     static public boolean Bluetooth_Conectado = false;
     static public boolean Bluetooth_Encendido = false;
     static public UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     static public ProgressDialog pDialog;
     static public NotificationCompat.Builder mBuilder;
     static final int NOTIF_ALERTA_ID = 1;
-    EditText Latitud_editText;
-    EditText Longitud_editText;
-    boolean gps_enabled = false, network_enabled = false;
-    public Button Boton_GPS;
     static public int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     static public Context contexto_gral;
     static public Ubicacion ubicacion;
- //   ConexionBluetooth conexionBluetooth;
     static public NotificationManager mNotificationManager;
+    private Toolbar toolbar_MainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -103,24 +99,34 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Latitud_editText = findViewById(R.id.Latitud);
-        Longitud_editText = findViewById(R.id.Longitud);
-        Boton_GPS = findViewById(R.id.button_GPS);
+        recyclerUsuarios = (RecyclerView) findViewById(R.id.recycler_view);
+
+        // Referencio los recursos del XML
+        toolbar_MainActivity = findViewById(R.id.toolbar);
+
+        // Genero el toolbar
+        setSupportActionBar(toolbar_MainActivity);
+        getSupportActionBar().setTitle("       D R I V E R  A S I S T");
 
         ListaUsuariosPrincipal = new ArrayList<>();
-        recyclerUsuarios = (RecyclerView) findViewById(R.id.recycler_view);
+
         recyclerUsuarios.setLayoutManager(new LinearLayoutManager(this));
 
+        // Lleno el RecyclerView con los Usuarios
         LlenarUsuarios();
 
         contexto_gral = getApplicationContext();
         ubicacion = new Ubicacion(this);
 
         // Registramos el BroadcastReceiver que instanciamos previamente para
-        // detectar los distintos eventos que queremos recibir
+        // detectar los distintos eventos que queremos recibir del Bluetooth
         IntentFilter filtro = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         this.registerReceiver(bReceiver, filtro);
 
+
+        //*****************************************************************************
+        // Creo la notificacion con sus atributos
+        //*****************************************************************************
         mBuilder = new NotificationCompat.Builder(MainActivity.this);
         mBuilder.setAutoCancel(true);
         mBuilder.setSmallIcon(R.drawable.icono_camion);
@@ -130,14 +136,13 @@ public class MainActivity extends AppCompatActivity
         mBuilder.setContentText("Ud a recibido nuevos datos ");
 
         Intent Intent = new Intent(MainActivity.this, MainActivity.class);
-
         PendingIntent contIntent = PendingIntent.getActivity(MainActivity.this, 0, Intent, 0);
-
         mBuilder.setContentIntent(contIntent);
-
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+        // Creo el adapter y se lo paso al RecyclerView para iniciarlo
         adapter = new AdaptadorRecyclerViewPrincipal(ListaUsuariosPrincipal);
+        recyclerUsuarios.setAdapter(adapter);
 
         adapter.setOnItemClickListener(new AdaptadorRecyclerViewPrincipal.OnItemClickListener()
         {
@@ -148,8 +153,8 @@ public class MainActivity extends AppCompatActivity
                 {
                  //   finish();
                     Intent Activity2 = new Intent(MainActivity.this, ActivitySecundaria.class);
-                    // Le paso el nombre y el estado del logueo del usuario correspondiente al item selecionado
 
+                    // Le paso los datos del Chofer a la segunda activity para mostrarla
                     String Lat_aux = new String(Latitud_Infraccion_RX_BT);
                     String Long_aux = new String(Longitud_Infraccion_RX_BT);
 
@@ -178,15 +183,19 @@ public class MainActivity extends AppCompatActivity
 
                     if (Bluetooth_Conectado == false)
                     {
+                        // Muerta la Activity de la lista de dispositivos para vincularlos
                         Intent activityListaDispositivos = new Intent(MainActivity.this, ListaDispositivos.class);
                         startActivityForResult(activityListaDispositivos, SOLICITA_CONEXION);
-                    } else {
+                    } else
+                        {
                         Toast.makeText(MainActivity.this, "Ya posee una conexion activa", Toast.LENGTH_SHORT).show();
                     }
                 }
 
-                if(Bluetooth_Conectado == true) {
-                    switch (position) {
+                if(Bluetooth_Conectado == true)
+                {
+                    switch (position)
+                    {
                         case 0:
 
                             Enviar_String_Bluetooth("<S34235547>");
@@ -195,31 +204,21 @@ public class MainActivity extends AppCompatActivity
 
                         case 1:
                             Enviar_String_Bluetooth("<S12345678>");
+                            Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
                             break;
 
                         case 2:
                             Enviar_String_Bluetooth("<S34500600>");
+                            Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
                             break;
 
                         case 3:
                             Enviar_String_Bluetooth("<S30266999>");
+                            Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
                             break;
 
                     }
                 }
-            }
-        });
-
-        recyclerUsuarios.setAdapter(adapter);
-
-        // Linea de separacion entre items de la lista
- //       recyclerUsuarios.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-
-        Boton_GPS.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Latitud_editText.setText(Latitud_GPS);
-                Longitud_editText.setText(Longitud_GPS);
             }
         });
     }
@@ -227,20 +226,12 @@ public class MainActivity extends AppCompatActivity
     public void Enviar_String_Bluetooth(String datos)
     {
         ConexionBluetooth conexionBluetooth_enviar_datos;
-      //  final NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Bluetooth_Conectado == true && Bluetooth_Encendido == true)
         {
             conexionBluetooth_enviar_datos = Bluetooth_init.Get_Conexion();
             conexionBluetooth_enviar_datos.enviar_string(datos);
-        //    mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
-
-         //   Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
         }
-      //  else
-      //  {
-      //      mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
-      //  }
     }
 
     // Instanciamos un BroadcastReceiver que se encargara de detectar si el estado
@@ -296,6 +287,7 @@ public class MainActivity extends AppCompatActivity
         switch (requestCode)
         {
             case 1:
+                // Si tengo permiso para usar el GPS lo inicio
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
                     Ubicacion ubicacion = new Ubicacion(this);
@@ -315,7 +307,7 @@ public class MainActivity extends AppCompatActivity
                 if (resultCode == RESULT_OK)
                 {
                     // Si entre aca es porque active el bluetooth
-                    //Toast.makeText(MainActivity.this, "bluetooth encendido", Toast.LENGTH_SHORT).show();
+                    // Muerta la Activity de la lista de dispositivos para vincularlos
                     Intent activityListaDispositivos = new Intent(MainActivity.this, ListaDispositivos.class);
                     startActivityForResult(activityListaDispositivos, SOLICITA_CONEXION);
                 }
@@ -325,6 +317,7 @@ public class MainActivity extends AppCompatActivity
 
                 if(resultCode == RESULT_OK)
                 {
+                    // Inicio una Async Task para iniciar el Bluetooth con una barra de estado
                     pDialog = new ProgressDialog(MainActivity.this);
                     pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                     pDialog.setMessage("Conectando dispositivo");
@@ -338,6 +331,7 @@ public class MainActivity extends AppCompatActivity
 
                     mDevice = mBluetoothAdapter.getRemoteDevice(MAC);
 
+                    // Inicio la tarea para iniciar la comunicacion Bluetooth
                     Bluetooth_init = new AsyncTask_BT_init_Dialog();
                     Bluetooth_init.execute();
                 }
