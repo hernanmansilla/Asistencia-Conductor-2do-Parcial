@@ -2,8 +2,6 @@ package com.example.herna.asistenciaconductor;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.PendingIntent;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,14 +10,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
-import static android.support.v4.app.ActivityCompat.requestPermissions;
 import static com.example.herna.asistenciaconductor.MainActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 import static com.example.herna.asistenciaconductor.MainActivity.contexto_gral;
 
@@ -33,7 +29,9 @@ public class Ubicacion implements LocationListener
     static public String Longitud_GPS=null;
     static public Location lc;
 
-    // Constructor de la Clase
+    //*****************************************************************************
+    // Constructor de la clase
+    //*****************************************************************************
     public Ubicacion(Context ctx)
     {
         this.contexto = ctx;
@@ -49,6 +47,7 @@ public class Ubicacion implements LocationListener
         }
         else
             {
+                // Si tengo permiso, pregunto si esta habilitado el GPS
             if(checkLocation())
             {
                 // Si tengo el GPS habilitado
@@ -79,7 +78,9 @@ public class Ubicacion implements LocationListener
         }
     }
 
-    // Funcion que se llama cada vez que cambio la posicion
+    //*****************************************************************************
+    // Metodo que se llama cada vez que cambio la posicion
+    //*****************************************************************************
     @Override
     public void onLocationChanged (Location location)
     {
@@ -89,14 +90,16 @@ public class Ubicacion implements LocationListener
         }
     }
 
+    //*****************************************************************************
     // Funcion que monitore los cambios de estado del GPS
+    //*****************************************************************************
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras)
     {
         switch (status)
         {
             case LocationProvider.AVAILABLE:
-                Toast.makeText(contexto_gral, "GPS habilitado", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(contexto_gral, "GPS habilitado", Toast.LENGTH_SHORT).show();
                 break;
 
             case LocationProvider.OUT_OF_SERVICE:
@@ -110,21 +113,27 @@ public class Ubicacion implements LocationListener
         }
     }
 
-    // Funcion que se llama cuando el GPS se habilita
+    //*****************************************************************************
+    // Metodo que se llama cuando el GPS se habilita
+    //*****************************************************************************
     @Override
     public void onProviderEnabled(String provider)
     {
         Toast.makeText(contexto_gral, "GPS habilitado", Toast.LENGTH_SHORT).show();
     }
 
-    // Funcion que se llama cuando el GPS se deshabilita
+    //*****************************************************************************
+    // Metodo que se llama cuando el GPS se deshabilita
+    //*****************************************************************************
     @Override
     public void onProviderDisabled(String provider) {
         Toast.makeText(contexto_gral, "GPS Deshabilitado", Toast.LENGTH_SHORT).show();
 
     }
 
+    //*****************************************************************************
     // Funcion para testear si esta habilitado el GPS
+    //*****************************************************************************
     private boolean checkLocation()
     {
         // En caso de que no este habilitado el GPS llamo a un metodo para ir a la pantalla Setting y habilitarlo
@@ -133,7 +142,10 @@ public class Ubicacion implements LocationListener
         return isLocationEnabled();
     }
 
+
+    //*****************************************************************************
     // Funcion para llamar a un AlertDialog para permitir la habilitacion del GPS
+    //*****************************************************************************
     private void showAlert()
     {
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this.contexto);
@@ -159,7 +171,9 @@ public class Ubicacion implements LocationListener
         dialog.show();
     }
 
+    //*****************************************************************************
     // Funcion para testear el proveedor de la ubicacion de GPS
+    //*****************************************************************************
     private boolean isLocationEnabled()
     {
         gps_enabled= LocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);

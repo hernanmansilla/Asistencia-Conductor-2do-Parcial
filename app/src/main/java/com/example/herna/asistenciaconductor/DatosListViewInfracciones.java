@@ -1,7 +1,8 @@
 package com.example.herna.asistenciaconductor;
 
-import android.widget.ImageView;
-
+//**********************************************************************************************
+// Clase que contiene los datos del item del ListView
+//**********************************************************************************************
 public class DatosListViewInfracciones
 {
     private int Id;
@@ -47,13 +48,4 @@ public class DatosListViewInfracciones
     {
         return Longitud_Infraccion;
     }
-
-    //**********************************************************************************************
-    // Obtengo el monto a favor
-    //**********************************************************************************************
-   /* public int getImagen()
-    {
-        return Imagen_Ubicacion;
-    }
-*/
 }

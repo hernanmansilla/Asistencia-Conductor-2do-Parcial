@@ -1,8 +1,8 @@
 package com.example.herna.asistenciaconductor;
 
-import android.graphics.drawable.Drawable;
-import android.widget.ImageView;
-
+//**********************************************************************************************
+// Clase que contiene los datos del item del RecyclerView
+//**********************************************************************************************
 public class DatosRecyclerViewPrincipal
 {
     private int Id;

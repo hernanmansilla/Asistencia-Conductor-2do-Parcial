@@ -1,8 +1,6 @@
 package com.example.herna.asistenciaconductor;
 
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +10,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+//*****************************************************************************
+// Clase del Adaptador del RecyclerView
+//*****************************************************************************
 public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<AdaptadorRecyclerViewPrincipal.ViewHolderPrincipal> implements View.OnClickListener
 {
     ArrayList<DatosRecyclerViewPrincipal> ListaUsuariosPrincipal;
@@ -37,7 +38,6 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
     @Override
     public void onBindViewHolder(ViewHolderPrincipal holder, final int position)
     {
-    //    holder.imagen.setImageResource(ListaUsuariosPrincipal.get(position).getImagen());
         holder.imageName.setText(ListaUsuariosPrincipal.get(position).getNombre());
         holder.imageDNI.setText(ListaUsuariosPrincipal.get(position).getDesc());
         holder.imagen_download.setImageResource(ListaUsuariosPrincipal.get(position).getImagen());
@@ -78,7 +78,6 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
         TextView imageName;
         TextView imageDNI;
         ImageView imagen_download;
-        RelativeLayout parentLayout;
 
         public ViewHolderPrincipal(View itemView, final OnItemClickListener listener)
         {
@@ -87,8 +86,8 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
             imageName = itemView.findViewById(R.id.imagen_nombre);
             imageDNI = itemView.findViewById(R.id.DNI);
             imagen_download = itemView.findViewById(R.id.imagen_download);
-          //  parentLayout = itemView.findViewById(R.id.parent_layout);e
 
+            // Funcion para atender la presion de los items de la lista del RecyclerView
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v)
@@ -104,6 +103,7 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
                 }
             });
 
+            // Funcion para atender la presion de los iconos de descarga en cada item
             imagen_download.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -119,8 +119,6 @@ public class AdaptadorRecyclerViewPrincipal extends RecyclerView.Adapter<Adaptad
                     }
                 }
             });
-
-
         }
     }
 }

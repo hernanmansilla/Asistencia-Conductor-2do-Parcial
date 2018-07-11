@@ -18,7 +18,7 @@
             android:layout_height="100dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:src="@mipmap/ic_launcher_round" />
+            android:src="@drawable/homero_camionero" />
 
         <TextView
             android:id="@+id/imagen_nombre"
@@ -27,7 +27,7 @@
             android:layout_alignTop="@+id/imagen"
             android:layout_centerHorizontal="true"
             android:text="NOMBRE"
-            android:textColor="#FFF"
+            android:textColor="#AFA"
             android:textSize="30dp"
             android:textStyle="bold" />
 
@@ -36,7 +36,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/DNI_text"
-            android:layout_toEndOf="@+id/DNI_text"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="91dp"
             android:text="34235547"
             android:textColor="#FFF"
             android:textSize="25sp" />

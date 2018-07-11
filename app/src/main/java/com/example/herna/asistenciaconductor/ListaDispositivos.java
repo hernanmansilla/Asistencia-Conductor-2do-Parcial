@@ -3,10 +3,7 @@ package com.example.herna.asistenciaconductor;
 import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -16,12 +13,18 @@ import android.widget.TextView;
 
 import java.util.Set;
 
+//**********************************************************************************************
+// Clase para manejar la activity de los dispositivos Bluetooth emparejados
+//**********************************************************************************************
 public class ListaDispositivos extends ListActivity
 {
     private BluetoothAdapter BluetoothAdapter = null;
     public ArrayAdapter<String> ArrayBluetooth;
     static String ENDERECO_MAC = null;
 
+    //**********************************************************************************************
+    // Constructor de la clase
+    //**********************************************************************************************
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
@@ -47,6 +50,9 @@ public class ListaDispositivos extends ListActivity
         }
     }
 
+    //**********************************************************************************************
+    // Metodo para manejar el click de cada item
+    //**********************************************************************************************
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id)
     {

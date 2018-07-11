@@ -15,59 +15,31 @@ package com.example.herna.asistenciaconductor;
 
 // Geocerca https://www.mytrendin.com/android-geofences-google-api/
 
-import android.Manifest;
-import android.app.Activity;
-import android.app.Notification;
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.BitmapDrawable;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.location.LocationProvider;
-import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
-import android.location.Location;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.Datos_Recibidos_BT;
 import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.conexionBluetooth;
 import static com.example.herna.asistenciaconductor.ConexionBluetooth.Usuario_habilitado;
-import static com.example.herna.asistenciaconductor.Ubicacion.Latitud_GPS;
-import static com.example.herna.asistenciaconductor.Ubicacion.Longitud_GPS;
 import static com.example.herna.asistenciaconductor.ConexionBluetooth.Cantidad_Infracciones_RX_BT;
 import static com.example.herna.asistenciaconductor.ConexionBluetooth.Velocidad_infraccion_RX_BT;
 import static com.example.herna.asistenciaconductor.ConexionBluetooth.Latitud_Infraccion_RX_BT;
@@ -83,7 +55,7 @@ public class MainActivity extends AppCompatActivity
     static public String MAC = null;
     static public BluetoothDevice mDevice = null;
     BluetoothAdapter mBluetoothAdapter = null;
-    AsyncTask_BT_init_Dialog Bluetooth_init;
+    AsyncTask_BT_Dialog Bluetooth_init;
     static public boolean Bluetooth_Conectado = false;
     static public boolean Bluetooth_Encendido = false;
     static public UUID mUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
@@ -92,12 +64,14 @@ public class MainActivity extends AppCompatActivity
     static final int NOTIF_ALERTA_ID = 1;
     static public int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     static public Context contexto_gral;
-    static public Ubicacion ubicacion;
     static public NotificationManager mNotificationManager;
     static public Toolbar toolbar_MainActivity;
     static public ConexionBluetooth conexionBluetooth_aux;
     static public AsyncTask_BT_RX Bluetooth_RX_aux;
 
+    //*****************************************************************************
+    // Constructor de la Activity Principal
+    //*****************************************************************************
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -111,26 +85,25 @@ public class MainActivity extends AppCompatActivity
 
         // Genero el toolbar
         setSupportActionBar(toolbar_MainActivity);
-        getSupportActionBar().setTitle("A S I S T E N C I A  C O N D U C T O R");
+        getSupportActionBar().setTitle("Asistencia Conductor");
 
         ListaUsuariosPrincipal = new ArrayList<>();
 
         recyclerUsuarios.setLayoutManager(new LinearLayoutManager(this));
 
         // Lleno el RecyclerView con los Usuarios
-        LlenarUsuarios();
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_file_download_red));
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("German","12345678",R.drawable.ic_file_download_red));
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Facundo","34500600",R.drawable.ic_file_download_red));
+        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Gaston","30266999",R.drawable.ic_file_download_red));
 
         contexto_gral = getApplicationContext();
-        ubicacion = new Ubicacion(this);
 
-        // Registramos el BroadcastReceiver que instanciamos previamente para
-        // detectar los distintos eventos que queremos recibir del Bluetooth
+        // Registramos el BroadcastReceiver que instanciamos previamente para detectar los distintos eventos que queremos recibir del Bluetooth
         IntentFilter filtro = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         this.registerReceiver(bReceiver, filtro);
 
-        //*****************************************************************************
         // Creo la notificacion con sus atributos
-        //*****************************************************************************
         mBuilder = new NotificationCompat.Builder(MainActivity.this);
         mBuilder.setAutoCancel(true);
         mBuilder.setSmallIcon(R.drawable.icono_camion);
@@ -148,6 +121,7 @@ public class MainActivity extends AppCompatActivity
         adapter = new AdaptadorRecyclerViewPrincipal(ListaUsuariosPrincipal);
         recyclerUsuarios.setAdapter(adapter);
 
+        // Funcion para atender la presion de algun item de la lista del RecyclerView
         adapter.setOnItemClickListener(new AdaptadorRecyclerViewPrincipal.OnItemClickListener()
         {
             @Override
@@ -180,6 +154,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
 
+            // Funcion para atender la presion de algun icono de descarga de los item del RecyclerView
             @Override
             public void onDownloadClick (int position)
             {
@@ -202,16 +177,15 @@ public class MainActivity extends AppCompatActivity
                         startActivityForResult(activityListaDispositivos, SOLICITA_CONEXION);
                     } else
                         {
-                     //   Toast.makeText(MainActivity.this, "Ya posee una conexion activa", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 if(Bluetooth_Conectado == true)
                 {
+                    // De acuerdo a que item toque, corresponde a un usuario y envio la peticion de sus datos
                     switch (position)
                     {
                         case 0:
-
                             Enviar_String_Bluetooth("<S34235547>");
                             Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
                             break;
@@ -230,26 +204,26 @@ public class MainActivity extends AppCompatActivity
                             Enviar_String_Bluetooth("<S30266999>");
                             Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
                             break;
-
                     }
                 }
             }
         });
     }
 
+    //*****************************************************************************
+    // Funcion para enviar un String via Bluetooth
+    //*****************************************************************************
     public void Enviar_String_Bluetooth(String datos)
     {
-        ConexionBluetooth conexionBluetooth_enviar_datos;
-
         if (Bluetooth_Conectado == true && Bluetooth_Encendido == true)
         {
-            conexionBluetooth_enviar_datos = Bluetooth_init.Get_Conexion();
-            conexionBluetooth_enviar_datos.enviar_string(datos);
+            conexionBluetooth.enviar_string(datos);
         }
     }
 
-    // Instanciamos un BroadcastReceiver que se encargara de detectar si el estado
-    // del Bluetooth del dispositivo ha cambiado mediante su handler onReceive
+    //*****************************************************************************
+    // BroadcastReceiver para detectar los estados del Bbluetooth
+    //*****************************************************************************
     private final BroadcastReceiver bReceiver = new BroadcastReceiver()
     {
         @Override
@@ -257,7 +231,7 @@ public class MainActivity extends AppCompatActivity
         {
             final String action = intent.getAction();
 
-            // Filtramos por la accion. Nos interesa detectar BluetoothAdapter.ACTION_STATE_CHANGED
+            // Filtramos por la accion, nos interesa detectar BluetoothAdapter.ACTION_STATE_CHANGED
             if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action))
             {
                 // Solicitamos la informacion extra del intent etiquetada como BluetoothAdapter.EXTRA_STATE
@@ -295,22 +269,9 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,String permissions[], int[]grantResults)
-    {
-        switch (requestCode)
-        {
-            case 1:
-                // Si tengo permiso para usar el GPS lo inicio
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
-                    Ubicacion ubicacion = new Ubicacion(this);
-                    // Toast.makeText(MainActivity.this, "Inicio Ubicacion", Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-    }
-
+    //*****************************************************************************
+    // Metodo que atiende el resultado del estado de las conexiones
+    //*****************************************************************************
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -320,8 +281,7 @@ public class MainActivity extends AppCompatActivity
 
                 if (resultCode == RESULT_OK)
                 {
-                    // Si entre aca es porque active el bluetooth
-                    // Muerta la Activity de la lista de dispositivos para vincularlos
+                    // Si entre aca es porque active el bluetooth y muestro la Activity con la lista de dispositivos emparejados
                     Intent activityListaDispositivos = new Intent(MainActivity.this, ListaDispositivos.class);
                     startActivityForResult(activityListaDispositivos, SOLICITA_CONEXION);
                 }
@@ -346,7 +306,7 @@ public class MainActivity extends AppCompatActivity
                     mDevice = mBluetoothAdapter.getRemoteDevice(MAC);
 
                     // Inicio la tarea para iniciar la comunicacion Bluetooth
-                    Bluetooth_init = new AsyncTask_BT_init_Dialog();
+                    Bluetooth_init = new AsyncTask_BT_Dialog();
                     Bluetooth_init.execute();
                 }
                 break;
@@ -357,16 +317,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void LlenarUsuarios()
-    {
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_file_download_red));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("German","12345678",R.drawable.ic_file_download_red));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Facundo","34500600",R.drawable.ic_file_download_red));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Gaston","30266999",R.drawable.ic_file_download_red));
-    }
-
     //*****************************************************************************
-    // Inflo el toolbar con los botones
+    // Inflo el toolbar para que aparezcan los iconos
     //*****************************************************************************
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -376,6 +328,9 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    //*****************************************************************************
+    // Funcion que se ejecuta cuando retorna a la activity principal
+    //*****************************************************************************
     @Override
     protected void onResume()
     {
@@ -384,7 +339,7 @@ public class MainActivity extends AppCompatActivity
         // Vuelvo a llamar a la tarea para que siga escuchando lo que llega por Bluetooth
         if(Bluetooth_Conectado == true && Bluetooth_Encendido == true)
         {
-         //   conexionBluetooth_aux = Bluetooth_init.Get_Conexion();
+
             Bluetooth_RX_aux = new AsyncTask_BT_RX(conexionBluetooth);
             Bluetooth_RX_aux.execute();
         }

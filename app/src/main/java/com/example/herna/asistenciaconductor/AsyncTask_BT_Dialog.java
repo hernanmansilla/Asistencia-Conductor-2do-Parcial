@@ -4,23 +4,25 @@ import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import java.io.IOException;
-
 import static com.example.herna.asistenciaconductor.MainActivity.mDevice;
 import static com.example.herna.asistenciaconductor.MainActivity.mUUID;
 import static com.example.herna.asistenciaconductor.MainActivity.pDialog;
 
-
-public class AsyncTask_BT_init_Dialog extends AsyncTask<Void, Integer, Boolean>
+//*****************************************************************************
+// Clase para crear una nueva tarea que inicia la comunicacion Bluettoth
+//*****************************************************************************
+public class AsyncTask_BT_Dialog extends AsyncTask<Void, Integer, Boolean>
 {
     BluetoothSocket mSocket = null;
     public ConexionBluetooth conexionBluetooth;
     static public AsyncTask_BT_RX Bluetooth_RX;
 
-    // Funcion que ejecuta la tarea principal de la AsyncTask
+    //*****************************************************************************
+    // Metodo que ejecuta la tarea principal de la AsyncTask
+    //*****************************************************************************
     @Override
     protected Boolean doInBackground(Void... params)
     {
-
         publishProgress(1*10);
         try
         {
@@ -45,6 +47,9 @@ public class AsyncTask_BT_init_Dialog extends AsyncTask<Void, Integer, Boolean>
         return true;
     }
 
+    //*****************************************************************************
+    // Metodo para actualizar el estado de la barra
+    //*****************************************************************************
     @Override
     protected void onProgressUpdate(Integer... values)
     {
@@ -53,24 +58,27 @@ public class AsyncTask_BT_init_Dialog extends AsyncTask<Void, Integer, Boolean>
         pDialog.setProgress(progreso);
     }
 
-    // Funcion que se ejecuta antes de ejecutar la tarea principal
+    //*****************************************************************************
+    // Metodo que se ejecuta antes de ejecutar la tarea principal
+    //*****************************************************************************
     @Override
     protected void onPreExecute()
     {
-        // Funcion que se ejecuta antes de la tarea, creo la barra de progreso
+        // Metodo que se ejecuta antes de la tarea, creo la barra de progreso
         pDialog.setOnCancelListener(new DialogInterface.OnCancelListener()
         {
             @Override
             public void onCancel(DialogInterface dialog) {
-                AsyncTask_BT_init_Dialog.this.cancel(true);
+                AsyncTask_BT_Dialog.this.cancel(true);
             }
         });
-
         pDialog.setProgress(0);
         pDialog.show();
     }
 
-    // Funcion que se ejecuta una vez finalizado la ejecucion de la tarea principal
+    //*****************************************************************************
+    // Metodo que se ejecuta una vez finalizado la ejecucion de la tarea principal
+    //*****************************************************************************
     @Override
     protected void onPostExecute(Boolean result)
     {
@@ -87,14 +95,12 @@ public class AsyncTask_BT_init_Dialog extends AsyncTask<Void, Integer, Boolean>
         }
     }
 
+    //*****************************************************************************
+    // Metodo para cancelar la tarea
+    //*****************************************************************************
     @Override
     protected void onCancelled() {
-        //Toast.makeText(MainActivity.this, "Tarea cancelada!", Toast.LENGTH_SHORT).show();
     }
 
-    public ConexionBluetooth Get_Conexion()
-    {
-        return conexionBluetooth;
-    }
 }
 

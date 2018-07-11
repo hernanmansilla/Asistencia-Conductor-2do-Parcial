@@ -1,6 +1,7 @@
 package com.example.herna.asistenciaconductor;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -9,16 +10,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-
 import java.util.ArrayList;
-
 import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.Datos_Recibidos_BT;
 import static com.example.herna.asistenciaconductor.ConexionBluetooth.Usuario_habilitado;
-import static com.example.herna.asistenciaconductor.MainActivity.toolbar_MainActivity;
 import static com.example.herna.asistenciaconductor.Ubicacion.Latitud_GPS;
 import static com.example.herna.asistenciaconductor.Ubicacion.Longitud_GPS;
 
-
+//*****************************************************************************
+// Activity Secundaria
+//*****************************************************************************
 public class ActivitySecundaria extends AppCompatActivity {
 
     ArrayList<DatosListViewInfracciones> ListaDesc;
@@ -26,9 +26,13 @@ public class ActivitySecundaria extends AppCompatActivity {
     EditText Latitud_editText;
     EditText Longitud_editText;
     public Button Boton_GPS;
+    static public Ubicacion ubicacion;
     static public Toolbar toolbar_ActivitySecundaria;
     private int i;
 
+    //*****************************************************************************
+    // Constructor de la clase
+    //*****************************************************************************
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,9 +52,11 @@ public class ActivitySecundaria extends AppCompatActivity {
         ListaInfracciones = findViewById(R.id.ListaInfracciones);
         toolbar_ActivitySecundaria = findViewById(R.id.toolbar2);
 
+        ubicacion = new Ubicacion(this);
+
         // Genero el toolbar
         setSupportActionBar(toolbar_ActivitySecundaria);
-        getSupportActionBar().setTitle("A S I S T E N C I A  C O N D U C T O R");
+        getSupportActionBar().setTitle("Asistencia Conductor");
 
         ListaDesc = new ArrayList<DatosListViewInfracciones>();
 
@@ -78,7 +84,7 @@ public class ActivitySecundaria extends AppCompatActivity {
     }
 
     //*****************************************************************************
-    // Inflo el toolbar con los botones
+    // Metodo para inflar el toolbar con los botones
     //*****************************************************************************
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
@@ -88,8 +94,26 @@ public class ActivitySecundaria extends AppCompatActivity {
         return true;
     }
 
+    //*****************************************************************************
+    // Metodo que atiende la accion de permiso cuando se habilita el GPS
+    //*****************************************************************************
+    @Override
+    public void onRequestPermissionsResult(int requestCode,String permissions[], int[]grantResults)
+    {
+        switch (requestCode)
+        {
+            case 1:
+                // Si tengo permiso para usar el GPS lo inicio
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    Ubicacion ubicacion = new Ubicacion(this);
+                }
+                break;
+        }
+    }
+
     //**********************************************************************************************
-    // Si presiono el boton atras finalizo esta actividad y vuelvo a la activity anterior
+    // Metodo que se ejecuta al presionar atras, y vuelve a la activity principal
     //**********************************************************************************************
     @Override
     public void onBackPressed()

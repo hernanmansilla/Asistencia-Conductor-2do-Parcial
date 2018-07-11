@@ -1,17 +1,12 @@
 package com.example.herna.asistenciaconductor;
 
-import android.app.NotificationManager;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.Datos_Recibidos_BT;
 import static com.example.herna.asistenciaconductor.MainActivity.ListaUsuariosPrincipal;
 import static com.example.herna.asistenciaconductor.MainActivity.NOTIF_ALERTA_ID;
-import static com.example.herna.asistenciaconductor.MainActivity.adapter;
 import static com.example.herna.asistenciaconductor.MainActivity.mBuilder;
 import static com.example.herna.asistenciaconductor.MainActivity.mNotificationManager;
 
@@ -30,13 +25,15 @@ public class ConexionBluetooth extends Thread
     static public byte [] Longitud_Infraccion_RX_BT= new byte[10];
     static public int CANTIDAD_MAXIMA_CHOFERES = 4;
     static public byte [] Usuario_habilitado = new byte[CANTIDAD_MAXIMA_CHOFERES];
-
     int i;
 
     static public InputStream mmInStream;
     static public OutputStream mmOutStream;
 
+
+    //*****************************************************************************
     // Constructor de la clase
+    //*****************************************************************************
     public ConexionBluetooth(BluetoothSocket socket)
     {
         // Creo los flujos donde se van a transferir la comunicacion Bluetooth
@@ -53,7 +50,9 @@ public class ConexionBluetooth extends Thread
         mmOutStream = tmpOut;
     }
 
-    // Funcion que queda a la escucha de la llegada de datos Bluetooth
+    //*****************************************************************************
+    // Metodo que queda a la escucha de la llegada de datos Bluetooth
+    //*****************************************************************************
     public void run()
     {
         boolean espero_datos = true;
@@ -76,9 +75,9 @@ public class ConexionBluetooth extends Thread
                         Recepcion_Datos_Bluetooth(buffer_rx_BT[i]);
                         buffer_rx_BT[i] = 0;
                     }
-                    bytes_recibidos=0;
+
+                    // Reseteo la maquina de estado por las dudas
                     estado_rx_bluetooth = 0;
-                   // espero_datos=false;
                     return;
                 }
             } catch (IOException e) {
@@ -88,7 +87,9 @@ public class ConexionBluetooth extends Thread
         return;
     }
 
-    // Funcion para enviar un array de bytes
+    //*****************************************************************************
+    // Metodo para enviar un array de bytes
+    //*****************************************************************************
     public void enviar_byte(byte[] bytes)
     {
         try {
@@ -97,7 +98,9 @@ public class ConexionBluetooth extends Thread
         }
     }
 
-    // Funcion para enviar un String
+    //*****************************************************************************
+    // Metodo para enviar un String
+    //*****************************************************************************
     public void enviar_string(String datos)
     {
         byte[] msgBuffer = datos.getBytes();
@@ -107,7 +110,9 @@ public class ConexionBluetooth extends Thread
         }
     }
 
+    //*****************************************************************************
     // Maquina de estados para la recepcion de cada byte entrante
+    // ****************************************************************************
     public void Recepcion_Datos_Bluetooth(byte dato)
     {
         switch (estado_rx_bluetooth) {
@@ -207,7 +212,11 @@ public class ConexionBluetooth extends Thread
         }
     }
 
-    public void Analizar_datos_Bluetooth() {
+    //*****************************************************************************
+    // Metodo para analizar los datos que llegaron por bluetooth
+    //*****************************************************************************
+    public void Analizar_datos_Bluetooth()
+    {
         int i;
 
         for (i = 0; i < CANTIDAD_MAXIMA_CHOFERES; i++)

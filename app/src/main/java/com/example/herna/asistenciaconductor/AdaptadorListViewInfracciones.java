@@ -11,6 +11,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+//**********************************************************************************************
+// Clase Adaptador del ListView Infracciones
+//**********************************************************************************************
 public class AdaptadorListViewInfracciones extends BaseAdapter
 {
     Context contexto;
@@ -26,7 +29,7 @@ public class AdaptadorListViewInfracciones extends BaseAdapter
     }
 
     //**********************************************************************************************
-    // Obtengo el tamaño
+    // Metodo para obtener el tamaño
     //**********************************************************************************************
     @Override
     public int getCount()
@@ -35,7 +38,7 @@ public class AdaptadorListViewInfracciones extends BaseAdapter
     }
 
     //**********************************************************************************************
-    // Obtengo el item seleccionado
+    // Metodo para obtener el item seleccionado
     //**********************************************************************************************
     @Override
     public Object getItem(int Position)
@@ -44,7 +47,7 @@ public class AdaptadorListViewInfracciones extends BaseAdapter
     }
 
     //**********************************************************************************************
-    // Obtengo el id del item seleccionado del listview
+    // Metodo para obtener el id del item seleccionado del listview
     //**********************************************************************************************
     @Override
     public long getItemId (int Position)
@@ -53,22 +56,23 @@ public class AdaptadorListViewInfracciones extends BaseAdapter
     }
 
     //**********************************************************************************************
-    // Funcion donde se crea la vista de cada item del listview
+    // Metodo donde se crea la vista de cada item del listview
     //**********************************************************************************************
     public View getView(int position, View convertView, ViewGroup parent)
     {
+        // Referencio el item con el ListView
         LayoutInflater inflater = LayoutInflater.from(contexto);
         View item = inflater.inflate(R.layout.layout_listitem_infracciones, null);
 
+        // Referencio los recursos del item
         TextView Lista_Velocidad = item.findViewById(R.id.Velocidad);
         TextView Lista_Latitud = item.findViewById(R.id.Latitud);
         TextView Lista_Longitud = item.findViewById(R.id.Longitud);
-    //    ImageView Imagen_mapa = item.findViewById(R.id.imagen_ubicar);
 
+        // Seteo los recursos del item en la vista
         Lista_Velocidad.setText(String.valueOf(ListaObjetosPrincipal.get(position).getVelocidad_Infraccion()));
         Lista_Latitud.setText(ListaObjetosPrincipal.get(position).getLatitud_Infraccion());
         Lista_Longitud.setText(ListaObjetosPrincipal.get(position).getLongitud_Infraccion());
-    //    Imagen_mapa.setImageResource(ListaObjetosPrincipal.get(position).getImagen());
 
         return(item);
     }
