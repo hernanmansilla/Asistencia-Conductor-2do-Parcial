@@ -2,4 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item
+        android:id="@+id/Icono_Camion"
+        android:icon="@drawable/icono_camion"
+        android:title="Icono_Camion"
+        app:showAsAction="always" />
+
 </menu>

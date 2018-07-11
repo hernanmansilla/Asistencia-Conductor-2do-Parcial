@@ -9,14 +9,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.Datos_Recibidos_BT;
+import static com.example.herna.asistenciaconductor.MainActivity.ListaUsuariosPrincipal;
 import static com.example.herna.asistenciaconductor.MainActivity.NOTIF_ALERTA_ID;
+import static com.example.herna.asistenciaconductor.MainActivity.adapter;
 import static com.example.herna.asistenciaconductor.MainActivity.mBuilder;
 import static com.example.herna.asistenciaconductor.MainActivity.mNotificationManager;
 
 public class ConexionBluetooth extends Thread
 {
     public byte[] buffer_rx_BT = new byte[256];  // buffer store for the stream
-    public int estado_rx_bluetooth=0;
+    static public int estado_rx_bluetooth=0;
     int Indice_RX_BT=0;
     private String DNI_Chofer=null;
     private String Latitud_Infraccion=null;
@@ -26,10 +28,13 @@ public class ConexionBluetooth extends Thread
     static public byte []  Velocidad_infraccion_RX_BT = new byte[10];
     static public byte [] Latitud_Infraccion_RX_BT= new byte[10];
     static public byte [] Longitud_Infraccion_RX_BT= new byte[10];
+    static public int CANTIDAD_MAXIMA_CHOFERES = 4;
+    static public byte [] Usuario_habilitado = new byte[CANTIDAD_MAXIMA_CHOFERES];
+
     int i;
 
-    private final InputStream mmInStream;
-    private final OutputStream mmOutStream;
+    static public InputStream mmInStream;
+    static public OutputStream mmOutStream;
 
     // Constructor de la clase
     public ConexionBluetooth(BluetoothSocket socket)
@@ -54,7 +59,8 @@ public class ConexionBluetooth extends Thread
         boolean espero_datos = true;
         int bytes_recibidos; // bytes returned from read()
 
-        while (espero_datos == true) {
+        while (espero_datos == true)
+        {
             try {
                 // Leo del InputStream
                 bytes_recibidos = mmInStream.read(buffer_rx_BT);
@@ -70,13 +76,16 @@ public class ConexionBluetooth extends Thread
                         Recepcion_Datos_Bluetooth(buffer_rx_BT[i]);
                         buffer_rx_BT[i] = 0;
                     }
+                    bytes_recibidos=0;
                     estado_rx_bluetooth = 0;
+                   // espero_datos=false;
+                    return;
                 }
             } catch (IOException e) {
                 //    break;
             }
-            return;
         }
+        return;
     }
 
     // Funcion para enviar un array de bytes
@@ -186,7 +195,7 @@ public class ConexionBluetooth extends Thread
                     estado_rx_bluetooth = 0;
                     Datos_Recibidos_BT = true;
                     mNotificationManager.notify(NOTIF_ALERTA_ID, mBuilder.build());
-                    //Analizar_datos_Bluetooth();
+                    Analizar_datos_Bluetooth();
                 } else {
                     estado_rx_bluetooth = 0;
                     i = 100;
@@ -197,38 +206,35 @@ public class ConexionBluetooth extends Thread
                 break;
         }
     }
-/*
+
     public void Analizar_datos_Bluetooth() {
         int i;
 
-        for (i = 0; i < CANTIDAD_MAXIMA_CHOFERES; i++) {
+        for (i = 0; i < CANTIDAD_MAXIMA_CHOFERES; i++)
+        {
             if (DNI_Chofer.equals(ListaUsuariosPrincipal.get(i).getDNI()))
             {
-                switch (i) {
+                switch (i)
+                {
                     case 0:
-                        //                 adapter = new AdaptadorRecyclerViewPrincipal(ListaUsuariosPrincipal);
-                        //                 ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_check_box));
-                        //                 recyclerUsuarios.setAdapter(adapter);
+                        Usuario_habilitado[0] = 1;
                         i = CANTIDAD_MAXIMA_CHOFERES;
                         break;
 
                     case 1:
-                        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("German", "12345678", R.drawable.ic_check_box));
-                        recyclerUsuarios.setAdapter(adapter);
+                        Usuario_habilitado[1] = 1;
                         i = CANTIDAD_MAXIMA_CHOFERES;
                         break;
                     case 2:
-                        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Facundo", "34500600", R.drawable.ic_check_box));
-                        recyclerUsuarios.setAdapter(adapter);
+                        Usuario_habilitado[2] = 1;
                         i = CANTIDAD_MAXIMA_CHOFERES;
                         break;
                     case 3:
-                        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Gaston", "30266999", R.drawable.ic_check_box));
-                        recyclerUsuarios.setAdapter(adapter);
+                        Usuario_habilitado[3] = 1;
                         i = CANTIDAD_MAXIMA_CHOFERES;
                         break;
                 }
             }
         }
-    }*/
+    }
 }

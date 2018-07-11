@@ -1,7 +1,10 @@
 package com.example.herna.asistenciaconductor;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -9,6 +12,9 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.Datos_Recibidos_BT;
+import static com.example.herna.asistenciaconductor.ConexionBluetooth.Usuario_habilitado;
+import static com.example.herna.asistenciaconductor.MainActivity.toolbar_MainActivity;
 import static com.example.herna.asistenciaconductor.Ubicacion.Latitud_GPS;
 import static com.example.herna.asistenciaconductor.Ubicacion.Longitud_GPS;
 
@@ -20,6 +26,7 @@ public class ActivitySecundaria extends AppCompatActivity {
     EditText Latitud_editText;
     EditText Longitud_editText;
     public Button Boton_GPS;
+    static public Toolbar toolbar_ActivitySecundaria;
     private int i;
 
     @Override
@@ -39,6 +46,11 @@ public class ActivitySecundaria extends AppCompatActivity {
         Longitud_editText = findViewById(R.id.Longitud);
         Boton_GPS = findViewById(R.id.button_GPS);
         ListaInfracciones = findViewById(R.id.ListaInfracciones);
+        toolbar_ActivitySecundaria = findViewById(R.id.toolbar2);
+
+        // Genero el toolbar
+        setSupportActionBar(toolbar_ActivitySecundaria);
+        getSupportActionBar().setTitle("A S I S T E N C I A  C O N D U C T O R");
 
         ListaDesc = new ArrayList<DatosListViewInfracciones>();
 
@@ -63,5 +75,33 @@ public class ActivitySecundaria extends AppCompatActivity {
                 Longitud_editText.setText(Longitud_GPS);
             }
         });
+    }
+
+    //*****************************************************************************
+    // Inflo el toolbar con los botones
+    //*****************************************************************************
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        return true;
+    }
+
+    //**********************************************************************************************
+    // Si presiono el boton atras finalizo esta actividad y vuelvo a la activity anterior
+    //**********************************************************************************************
+    @Override
+    public void onBackPressed()
+    {
+        finish();
+        Usuario_habilitado[0]=0;
+        Usuario_habilitado[1]=0;
+        Usuario_habilitado[2]=0;
+        Usuario_habilitado[3]=0;
+        Datos_Recibidos_BT=false;
+        Intent Activity_Main = new Intent(ActivitySecundaria.this, MainActivity.class);
+        startActivity(Activity_Main);
+        super.onBackPressed();
     }
 }

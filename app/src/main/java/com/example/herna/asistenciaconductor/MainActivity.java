@@ -45,6 +45,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -63,6 +64,8 @@ import java.util.Locale;
 import java.util.UUID;
 
 import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.Datos_Recibidos_BT;
+import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.conexionBluetooth;
+import static com.example.herna.asistenciaconductor.ConexionBluetooth.Usuario_habilitado;
 import static com.example.herna.asistenciaconductor.Ubicacion.Latitud_GPS;
 import static com.example.herna.asistenciaconductor.Ubicacion.Longitud_GPS;
 import static com.example.herna.asistenciaconductor.ConexionBluetooth.Cantidad_Infracciones_RX_BT;
@@ -91,7 +94,9 @@ public class MainActivity extends AppCompatActivity
     static public Context contexto_gral;
     static public Ubicacion ubicacion;
     static public NotificationManager mNotificationManager;
-    private Toolbar toolbar_MainActivity;
+    static public Toolbar toolbar_MainActivity;
+    static public ConexionBluetooth conexionBluetooth_aux;
+    static public AsyncTask_BT_RX Bluetooth_RX_aux;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -106,7 +111,7 @@ public class MainActivity extends AppCompatActivity
 
         // Genero el toolbar
         setSupportActionBar(toolbar_MainActivity);
-        getSupportActionBar().setTitle("       D R I V E R  A S I S T");
+        getSupportActionBar().setTitle("A S I S T E N C I A  C O N D U C T O R");
 
         ListaUsuariosPrincipal = new ArrayList<>();
 
@@ -122,7 +127,6 @@ public class MainActivity extends AppCompatActivity
         // detectar los distintos eventos que queremos recibir del Bluetooth
         IntentFilter filtro = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         this.registerReceiver(bReceiver, filtro);
-
 
         //*****************************************************************************
         // Creo la notificacion con sus atributos
@@ -151,18 +155,28 @@ public class MainActivity extends AppCompatActivity
             {
                 if(Datos_Recibidos_BT==true)
                 {
-                 //   finish();
-                    Intent Activity2 = new Intent(MainActivity.this, ActivitySecundaria.class);
+                    if(Usuario_habilitado[position]==1)
+                    {
+                        Intent Activity2 = new Intent(MainActivity.this, ActivitySecundaria.class);
 
-                    // Le paso los datos del Chofer a la segunda activity para mostrarla
-                    String Lat_aux = new String(Latitud_Infraccion_RX_BT);
-                    String Long_aux = new String(Longitud_Infraccion_RX_BT);
+                        // Le paso los datos del Chofer a la segunda activity para mostrarla
+                        String Lat_aux = new String(Latitud_Infraccion_RX_BT);
+                        String Long_aux = new String(Longitud_Infraccion_RX_BT);
 
-                    Activity2.putExtra("Cantidad_infracciones", Cantidad_Infracciones_RX_BT);
-                    Activity2.putExtra("Velocidad_infraccion", Velocidad_infraccion_RX_BT);
-                    Activity2.putExtra("Latitud_infraccion", Lat_aux);
-                    Activity2.putExtra("Longitud_infraccion", Long_aux);
-                    startActivity(Activity2);
+                        Activity2.putExtra("Cantidad_infracciones", Cantidad_Infracciones_RX_BT);
+                        Activity2.putExtra("Velocidad_infraccion", Velocidad_infraccion_RX_BT);
+                        Activity2.putExtra("Latitud_infraccion", Lat_aux);
+                        Activity2.putExtra("Longitud_infraccion", Long_aux);
+                        startActivity(Activity2);
+                    }
+                    else
+                    {
+                        Toast.makeText(MainActivity.this, "Descargue los datos", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else
+                {
+                    Toast.makeText(MainActivity.this, "Descargue los datos", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -188,7 +202,7 @@ public class MainActivity extends AppCompatActivity
                         startActivityForResult(activityListaDispositivos, SOLICITA_CONEXION);
                     } else
                         {
-                        Toast.makeText(MainActivity.this, "Ya posee una conexion activa", Toast.LENGTH_SHORT).show();
+                     //   Toast.makeText(MainActivity.this, "Ya posee una conexion activa", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -349,5 +363,30 @@ public class MainActivity extends AppCompatActivity
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("German","12345678",R.drawable.ic_file_download_red));
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Facundo","34500600",R.drawable.ic_file_download_red));
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Gaston","30266999",R.drawable.ic_file_download_red));
+    }
+
+    //*****************************************************************************
+    // Inflo el toolbar con los botones
+    //*****************************************************************************
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        return true;
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        // Vuelvo a llamar a la tarea para que siga escuchando lo que llega por Bluetooth
+        if(Bluetooth_Conectado == true && Bluetooth_Encendido == true)
+        {
+         //   conexionBluetooth_aux = Bluetooth_init.Get_Conexion();
+            Bluetooth_RX_aux = new AsyncTask_BT_RX(conexionBluetooth);
+            Bluetooth_RX_aux.execute();
+        }
     }
 }

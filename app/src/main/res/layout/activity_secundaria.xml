@@ -6,13 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".ActivitySecundaria">
 
+        <include
+            android:id="@+id/toolbar2"
+            layout="@layout/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <ListView
             android:id="@+id/ListaInfracciones"
             android:layout_width="wrap_content"
-            android:layout_height="341dp"
+            android:layout_height="370dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            android:layout_marginTop="0dp"/>
+            android:layout_marginTop="56dp"
+            android:background="#888888" />
 
         <EditText
             android:id="@+id/Latitud"
@@ -36,20 +43,22 @@
 
         <TextView
             android:id="@+id/Latitud_text"
-            android:layout_width="145dp"
-            android:layout_height="45dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_above="@+id/Longitud"
+            android:textSize="25dp"
             android:layout_alignParentStart="true"
-            android:text="Latitud" />
+            android:text="Latitud:" />
 
         <TextView
             android:id="@+id/Longitud_text"
-            android:layout_width="145dp"
-            android:layout_height="45dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
-            android:layout_marginBottom="81dp"
-            android:text="Longitud" />
+            android:layout_marginBottom="56dp"
+            android:text="Longitud:"
+            android:textSize="25dp" />
 
         <Button
             android:id="@+id/button_GPS"
