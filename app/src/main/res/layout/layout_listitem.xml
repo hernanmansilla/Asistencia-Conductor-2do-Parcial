@@ -60,7 +60,7 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:fillColor="#FF000444"
-            android:src="@drawable/ic_file_download_red" />
+            android:src="@drawable/ic_download" />
 
     </RelativeLayout>
 

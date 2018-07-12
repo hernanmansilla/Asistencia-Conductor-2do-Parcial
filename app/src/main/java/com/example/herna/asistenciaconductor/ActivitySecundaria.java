@@ -2,6 +2,7 @@ package com.example.herna.asistenciaconductor;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.Datos_Recibidos_BT;
 import static com.example.herna.asistenciaconductor.ConexionBluetooth.Usuario_habilitado;
+import static com.example.herna.asistenciaconductor.Ubicacion.GPS_Habilitado;
+import static com.example.herna.asistenciaconductor.Ubicacion.GPS_Habilitado_Primera_Vez;
 import static com.example.herna.asistenciaconductor.Ubicacion.Latitud_GPS;
 import static com.example.herna.asistenciaconductor.Ubicacion.Longitud_GPS;
 
@@ -106,9 +109,22 @@ public class ActivitySecundaria extends AppCompatActivity {
                 // Si tengo permiso para usar el GPS lo inicio
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
-                    Ubicacion ubicacion = new Ubicacion(this);
+           //         Ubicacion ubicacion = new Ubicacion(this);
                 }
                 break;
+        }
+    }
+
+    @Override
+    protected void onResume()
+    {
+        //  Para activar el GPS por una vez sola
+        super.onResume();
+        if((GPS_Habilitado == 1)&&(GPS_Habilitado_Primera_Vez==0))
+            ubicacion = new Ubicacion(this);
+        else
+        {
+            GPS_Habilitado_Primera_Vez=0;
         }
     }
 
@@ -119,6 +135,10 @@ public class ActivitySecundaria extends AppCompatActivity {
     public void onBackPressed()
     {
         finish();
+
+        // Hago esto para que no inicie de nuevo el servicio de GPS
+        GPS_Habilitado=0;
+
         Usuario_habilitado[0]=0;
         Usuario_habilitado[1]=0;
         Usuario_habilitado[2]=0;

@@ -28,6 +28,8 @@ public class Ubicacion implements LocationListener
     static public String Latitud_GPS=null;
     static public String Longitud_GPS=null;
     static public Location lc;
+    static public int GPS_Habilitado=0;
+    static public int GPS_Habilitado_Primera_Vez=0;
 
     //*****************************************************************************
     // Constructor de la clase
@@ -99,7 +101,7 @@ public class Ubicacion implements LocationListener
         switch (status)
         {
             case LocationProvider.AVAILABLE:
-               // Toast.makeText(contexto_gral, "GPS habilitado", Toast.LENGTH_SHORT).show();
+           //     Toast.makeText(contexto_gral, "GPS habilitado", Toast.LENGTH_SHORT).show();
                 break;
 
             case LocationProvider.OUT_OF_SERVICE:
@@ -107,7 +109,7 @@ public class Ubicacion implements LocationListener
                 break;
 
             case LocationProvider.TEMPORARILY_UNAVAILABLE:
-                Toast.makeText(contexto_gral, "GPS temporalmente deshabilitado", Toast.LENGTH_SHORT).show();
+          //      Toast.makeText(contexto_gral, "GPS temporalmente deshabilitado", Toast.LENGTH_SHORT).show();
                 break;
 
         }
@@ -148,11 +150,13 @@ public class Ubicacion implements LocationListener
     //*****************************************************************************
     private void showAlert()
     {
+        GPS_Habilitado_Primera_Vez=1;
+        GPS_Habilitado = 1;
+
         final AlertDialog.Builder dialog = new AlertDialog.Builder(this.contexto);
                  dialog.setTitle("Enable Location")
-                .setMessage("Su ubicación esta desactivada.\npor favor active su ubicación " +
-                        "usa esta app")
-                .setPositiveButton("SI", new DialogInterface.OnClickListener()
+                .setMessage("Su ubicación esta desactivada.\nPor favor active su ubicación")
+                .setPositiveButton("Activar", new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface paramDialogInterface, int paramInt)
