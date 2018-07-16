@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "557929998948",
+    "firebase_url": "https://asistencia-conduccion.firebaseio.com",
+    "project_id": "asistencia-conduccion",
+    "storage_bucket": "asistencia-conduccion.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:557929998948:android:ba41909e389c6b35",
+        "android_client_info": {
+          "package_name": "com.example.herna.asistenciaconductor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "557929998948-agmnkn11c99a7s7cu1icul2t7na5s95b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.herna.asistenciaconductor",
+            "certificate_hash": "a1807d9a6c75728fe69f0c005b7934f791aaba32"
+          }
+        },
+        {
+          "client_id": "557929998948-ij62mk9earhp9jj6q5bgenlpo78v8kfp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGxkvf5KLsvtwk6ShDlEscnzwWwYsMP-U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "557929998948-ij62mk9earhp9jj6q5bgenlpo78v8kfp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
