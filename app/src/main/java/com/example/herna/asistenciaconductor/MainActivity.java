@@ -31,8 +31,16 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -78,13 +86,17 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         recyclerUsuarios = (RecyclerView) findViewById(R.id.recycler_view);
-
+        https://steamcdn-a.akamaihd.net/steam/marketing/5632924643240491826/images/Spanish.jpg?t=1531849495
         // Referencio los recursos del XML
         toolbar_MainActivity = findViewById(R.id.toolbar);
 
         // Genero el toolbar
         setSupportActionBar(toolbar_MainActivity);
         getSupportActionBar().setTitle("Asistencia Conductor");
+
+        DatabaseReference dbUsuarios = FirebaseDatabase.getInstance().getReference("Usuarios");
+             //   .child("1")
+             //   .child("Nombre");
 
         ListaUsuariosPrincipal = new ArrayList<>();
 
@@ -205,6 +217,21 @@ public class MainActivity extends AppCompatActivity
                             break;
                     }
                 }
+            }
+        });
+
+        dbUsuarios.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String valor = dataSnapshot.child("34235547").child("Nombre").getValue().toString();
+                Toast.makeText(MainActivity.this, "ID:" + valor, Toast.LENGTH_SHORT).show();
+           //     String valor = dataSnapshot.child("1").child("Nombre").getValue().toString();
+          //      lblCielo.setText(valor);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //Log.e(TAGLOG, "Error!", databaseError.toException());
             }
         });
     }
