@@ -28,18 +28,18 @@ public class DatosFireBase {
         return DNI;
     }
 
-    public void setTemperatura(long temperatura) {
-        this.temperatura = temperatura;
+    public void setDNI(String dni) {
+        this.DNI = dni;
     }
 
-    public double getHumedad() {
-        return humedad;
+    public double getVelocidad() {
+        return Velocidad;
     }
 
-    public void setHumedad(double humedad) {
-        this.humedad = humedad;
+    public void setVelocidad(int velocidad) {
+        this.Velocidad = velocidad;
     }
-
+/*
     @Override
     public String toString() {
         return "Prediccion{" +
@@ -47,5 +47,5 @@ public class DatosFireBase {
                 ", temperatura=" + temperatura +
                 ", humedad=" + humedad +
                 '}';
-    }
+    }*/
 }

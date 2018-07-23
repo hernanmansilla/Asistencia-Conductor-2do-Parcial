@@ -41,6 +41,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -94,20 +95,20 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar_MainActivity);
         getSupportActionBar().setTitle("Asistencia Conductor");
 
+      //  DatabaseReference dbUsuarios = FirebaseDatabase.getInstance();
         DatabaseReference dbUsuarios = FirebaseDatabase.getInstance().getReference("Usuarios");
-             //   .child("1")
-             //   .child("Nombre");
+      //  String key = dbUsuarios.;
 
         ListaUsuariosPrincipal = new ArrayList<>();
 
         recyclerUsuarios.setLayoutManager(new LinearLayoutManager(this));
 
         // Lleno el RecyclerView con los Usuarios
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_download));
+     /*   ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_download));
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("German","12345678",R.drawable.ic_download));
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Facundo","34500600",R.drawable.ic_download));
         ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Gaston","30266999",R.drawable.ic_download));
-
+*/
         contexto_gral = getApplicationContext();
 
         // Registramos el BroadcastReceiver que instanciamos previamente para detectar los distintos eventos que queremos recibir del Bluetooth
@@ -223,10 +224,27 @@ public class MainActivity extends AppCompatActivity
         dbUsuarios.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String valor = dataSnapshot.child("34235547").child("Nombre").getValue().toString();
-                Toast.makeText(MainActivity.this, "ID:" + valor, Toast.LENGTH_SHORT).show();
-           //     String valor = dataSnapshot.child("1").child("Nombre").getValue().toString();
-          //      lblCielo.setText(valor);
+
+                long i;
+
+            //    String valor = dataSnapshot.child("34235547").child("Nombre").getValue().toString();
+            //    Toast.makeText(MainActivity.this, "ID:" + valor, Toast.LENGTH_SHORT).show();
+
+                long Cantidad_Children = dataSnapshot.getChildrenCount();
+
+                ListaUsuariosPrincipal.removeAll(ListaUsuariosPrincipal);
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                  //  DatosRecyclerViewPrincipal users = snapshot.getValue(DatosRecyclerViewPrincipal.class);
+                  //  ListaUsuariosPrincipal.add(users);
+                    String DNI = snapshot.getKey();
+                    String nombre = dataSnapshot.child(DNI).child("Nombre").getValue().toString();
+                    ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal(nombre,DNI,R.drawable.ic_download));
+              //      Toast.makeText(MainActivity.this, "", Toast.LENGTH_SHORT).show();
+                }
+
+                // Notiicamos que se cambiaron los datos del RecyclerView
+                adapter.notifyDataSetChanged();
+
             }
 
             @Override
