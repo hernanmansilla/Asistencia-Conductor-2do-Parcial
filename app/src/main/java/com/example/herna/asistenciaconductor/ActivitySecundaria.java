@@ -11,9 +11,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.Datos_Recibidos_BT;
 import static com.example.herna.asistenciaconductor.ConexionBluetooth.Usuario_habilitado;
+import static com.example.herna.asistenciaconductor.MainActivity.ListaUsuariosPrincipal;
+import static com.example.herna.asistenciaconductor.MainActivity.dbUsuarios;
 import static com.example.herna.asistenciaconductor.Ubicacion.GPS_Habilitado;
 import static com.example.herna.asistenciaconductor.Ubicacion.GPS_Habilitado_Primera_Vez;
 import static com.example.herna.asistenciaconductor.Ubicacion.Latitud_GPS;
@@ -44,10 +51,11 @@ public class ActivitySecundaria extends AppCompatActivity {
         // Obtengo el usuario que corresponde al item seleciconado
         Bundle extras = getIntent().getExtras();
         assert extras != null;
-        int Cantidad_infracciones = extras.getInt("Cantidad_infracciones");
-        byte [] Velocidad_infraccion = extras.getByteArray("Velocidad_infraccion");
-        String Latitud_infraccion = extras.getString("Latitud_infraccion");
-        String Longitud_infraccion = extras.getString("Longitud_infraccion");
+    //    int Cantidad_infracciones = extras.getInt("Cantidad_infracciones");
+    //    byte [] Velocidad_infraccion = extras.getByteArray("Velocidad_infraccion");
+    //    String Latitud_infraccion = extras.getString("Latitud_infraccion");
+
+        final String DNI_Seleccionado = extras.getString("DNI_Seleccionado");
 
         Latitud_editText = findViewById(R.id.Latitud);
         Longitud_editText = findViewById(R.id.Longitud);
@@ -63,17 +71,13 @@ public class ActivitySecundaria extends AppCompatActivity {
 
         ListaDesc = new ArrayList<DatosListViewInfracciones>();
 
-        for(i=0;i<Cantidad_infracciones;i++)
-        {
-            // Inserto en mi objeto para mostrar en el listview
-            ListaDesc.add(new DatosListViewInfracciones(Velocidad_infraccion[i], Latitud_infraccion, Longitud_infraccion));
-        }
+
 
         // Instancio mi clase creada adaptador con los datos ya precargados
-        AdaptadorListViewInfracciones adaptador1 = new AdaptadorListViewInfracciones(getApplicationContext(),ListaDesc);
+        final AdaptadorListViewInfracciones adaptador1 = new AdaptadorListViewInfracciones(getApplicationContext(),ListaDesc);
 
         // Referencio el adaptador con la lista del XML
-        ListaInfracciones.setAdapter(adaptador1);
+      //  ListaInfracciones.setAdapter(adaptador1);
 
         // Boton para actualizar el GPS
         Boton_GPS.setOnClickListener(new View.OnClickListener()
@@ -82,6 +86,41 @@ public class ActivitySecundaria extends AppCompatActivity {
             public void onClick(View v) {
                 Latitud_editText.setText(Latitud_GPS);
                 Longitud_editText.setText(Longitud_GPS);
+            }
+        });
+
+        dbUsuarios.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
+                    String Dni_aux = snapshot.getKey();
+
+                    if(Dni_aux.equals(DNI_Seleccionado))
+                    {
+                        // Obtengo la cantidad de nodos hijos para saber la cantidad de infracciones
+                        long Cantidad_Infracciones = snapshot.child("Infracciones").getChildrenCount();
+
+                        for (i = 1; i <= Cantidad_Infracciones; i++)
+                        {
+                            // Leo los valores de la base de datos
+                            long Vel_Infr =  (long) snapshot.child("Infracciones").child("Infr" + i).child("Velocidad").getValue();
+                            String Lat_Inf = snapshot.child("Infracciones").child("Infr" + i).child("Latitud").getValue().toString();
+                            String Long_Inf = snapshot.child("Infracciones").child("Infr" + i).child("Longitud").getValue().toString();
+
+                            // Inserto en mi objeto para mostrar en el listview
+                            ListaDesc.add(new DatosListViewInfracciones((int)Vel_Infr, Lat_Inf, Long_Inf));
+                        }
+                    }
+                }
+                ListaInfracciones.setAdapter(adaptador1);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }

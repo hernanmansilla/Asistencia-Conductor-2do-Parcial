@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import static com.example.herna.asistenciaconductor.AsyncTask_BT_RX.Datos_Recibidos_BT;
 import static com.example.herna.asistenciaconductor.MainActivity.ListaUsuariosPrincipal;
 import static com.example.herna.asistenciaconductor.MainActivity.NOTIF_ALERTA_ID;
+import static com.example.herna.asistenciaconductor.MainActivity.dbUsuarios;
 import static com.example.herna.asistenciaconductor.MainActivity.mBuilder;
 import static com.example.herna.asistenciaconductor.MainActivity.mNotificationManager;
 
@@ -223,26 +224,14 @@ public class ConexionBluetooth extends Thread
         {
             if (DNI_Chofer.equals(ListaUsuariosPrincipal.get(i).getDNI()))
             {
-                switch (i)
+                for(i=1;i<=Cantidad_Infracciones_RX_BT;i++)
                 {
-                    case 0:
-                        Usuario_habilitado[0] = 1;
-                        i = CANTIDAD_MAXIMA_CHOFERES;
-                        break;
-
-                    case 1:
-                        Usuario_habilitado[1] = 1;
-                        i = CANTIDAD_MAXIMA_CHOFERES;
-                        break;
-                    case 2:
-                        Usuario_habilitado[2] = 1;
-                        i = CANTIDAD_MAXIMA_CHOFERES;
-                        break;
-                    case 3:
-                        Usuario_habilitado[3] = 1;
-                        i = CANTIDAD_MAXIMA_CHOFERES;
-                        break;
+                    long Vel_Aux = Velocidad_infraccion_RX_BT[i - 1];
+                    dbUsuarios.child(DNI_Chofer).child("Infracciones").child("Infr" + i).child("Latitud").setValue(Latitud_Infraccion);
+                    dbUsuarios.child(DNI_Chofer).child("Infracciones").child("Infr" + i).child("Longitud").setValue(Longitud_Infraccion);
+                    dbUsuarios.child(DNI_Chofer).child("Infracciones").child("Infr" + i).child("Velocidad").setValue(Vel_Aux);
                 }
+                i = CANTIDAD_MAXIMA_CHOFERES;
             }
         }
     }
