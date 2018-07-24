@@ -51,9 +51,6 @@ public class ActivitySecundaria extends AppCompatActivity {
         // Obtengo el usuario que corresponde al item seleciconado
         Bundle extras = getIntent().getExtras();
         assert extras != null;
-    //    int Cantidad_infracciones = extras.getInt("Cantidad_infracciones");
-    //    byte [] Velocidad_infraccion = extras.getByteArray("Velocidad_infraccion");
-    //    String Latitud_infraccion = extras.getString("Latitud_infraccion");
 
         final String DNI_Seleccionado = extras.getString("DNI_Seleccionado");
 
@@ -71,13 +68,8 @@ public class ActivitySecundaria extends AppCompatActivity {
 
         ListaDesc = new ArrayList<DatosListViewInfracciones>();
 
-
-
         // Instancio mi clase creada adaptador con los datos ya precargados
         final AdaptadorListViewInfracciones adaptador1 = new AdaptadorListViewInfracciones(getApplicationContext(),ListaDesc);
-
-        // Referencio el adaptador con la lista del XML
-      //  ListaInfracciones.setAdapter(adaptador1);
 
         // Boton para actualizar el GPS
         Boton_GPS.setOnClickListener(new View.OnClickListener()

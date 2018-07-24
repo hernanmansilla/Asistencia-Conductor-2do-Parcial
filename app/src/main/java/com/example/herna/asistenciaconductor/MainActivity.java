@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         recyclerUsuarios = (RecyclerView) findViewById(R.id.recycler_view);
-        https://steamcdn-a.akamaihd.net/steam/marketing/5632924643240491826/images/Spanish.jpg?t=1531849495
+
         // Referencio los recursos del XML
         toolbar_MainActivity = findViewById(R.id.toolbar);
 
@@ -98,20 +98,13 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar_MainActivity);
         getSupportActionBar().setTitle("Asistencia Conductor");
 
-      //  DatabaseReference dbUsuarios = FirebaseDatabase.getInstance();
+        // Obtengo una referencia a la base de datos
         dbUsuarios = FirebaseDatabase.getInstance().getReference("Usuarios");
-      //  String key = dbUsuarios.;
 
         ListaUsuariosPrincipal = new ArrayList<>();
 
         recyclerUsuarios.setLayoutManager(new LinearLayoutManager(this));
 
-        // Lleno el RecyclerView con los Usuarios
-     /*   ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Hernan","34235547",R.drawable.ic_download));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("German","12345678",R.drawable.ic_download));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Facundo","34500600",R.drawable.ic_download));
-        ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal("Gaston","30266999",R.drawable.ic_download));
-*/
         contexto_gral = getApplicationContext();
 
         // Registramos el BroadcastReceiver que instanciamos previamente para detectar los distintos eventos que queremos recibir del Bluetooth
@@ -142,34 +135,15 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(int position)
             {
-            //    if(Datos_Recibidos_BT==true)
-            //    {
-            //        if(Usuario_habilitado[position]==1)
-            //        {
-                        // Obtengo la informacion del item seleccionado
-                        DNI_Seleccionado = ListaUsuariosPrincipal.get(position).getDNI();
+                // Obtengo la informacion del item seleccionado
+                DNI_Seleccionado = ListaUsuariosPrincipal.get(position).getDNI();
 
-                        Intent Activity2 = new Intent(MainActivity.this, ActivitySecundaria.class);
+                Intent Activity2 = new Intent(MainActivity.this, ActivitySecundaria.class);
 
-                        // Le paso los datos del Chofer a la segunda activity para mostrarla
-                   //     String Lat_aux = new String(Latitud_Infraccion_RX_BT);
-                   //     String Long_aux = new String(Longitud_Infraccion_RX_BT);
-
-                        Activity2.putExtra("DNI_Seleccionado", DNI_Seleccionado);
-                 /*       Activity2.putExtra("Velocidad_infraccion", Velocidad_infraccion_RX_BT);
-                        Activity2.putExtra("Latitud_infraccion", Lat_aux);
-                        Activity2.putExtra("Longitud_infraccion", Long_aux);*/
-                        startActivity(Activity2);
-             /*       }
-                    else
-                    {
-                        Toast.makeText(MainActivity.this, "Descargue los datos", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else
-                {
-                    Toast.makeText(MainActivity.this, "Descargue los datos", Toast.LENGTH_SHORT).show();
-                }*/
+                // Le paso los datos del Chofer a la segunda activity para mostrarla
+                finish();
+                Activity2.putExtra("DNI_Seleccionado", DNI_Seleccionado);
+                startActivity(Activity2);
             }
 
             // Funcion para atender la presion de algun icono de descarga de los item del RecyclerView
@@ -203,29 +177,6 @@ public class MainActivity extends AppCompatActivity
                     DNI_Seleccionado = ListaUsuariosPrincipal.get(position).getDNI();
 
                     Enviar_String_Bluetooth("<S" + DNI_Seleccionado + ">");
-                    // De acuerdo a que item toque, corresponde a un usuario y envio la peticion de sus datos
-                /*    switch (position)
-                    {
-                        case 0:
-                            Enviar_String_Bluetooth("<S34235547>");
-                            Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
-                            break;
-
-                        case 1:
-                            Enviar_String_Bluetooth("<S12345678>");
-                            Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
-                            break;
-
-                        case 2:
-                            Enviar_String_Bluetooth("<S34500600>");
-                            Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
-                            break;
-
-                        case 3:
-                            Enviar_String_Bluetooth("<S30266999>");
-                            Toast.makeText(MainActivity.this, "Envie dato", Toast.LENGTH_SHORT).show();
-                            break;
-                    }*/
                 }
             }
         });
@@ -237,26 +188,19 @@ public class MainActivity extends AppCompatActivity
 
                 long i;
 
-            //    String valor = dataSnapshot.child("34235547").child("Nombre").getValue().toString();
-            //    Toast.makeText(MainActivity.this, "ID:" + valor, Toast.LENGTH_SHORT).show();
-
                 long Cantidad_Children = dataSnapshot.getChildrenCount();
 
                 ListaUsuariosPrincipal.removeAll(ListaUsuariosPrincipal);
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                  //  DatosRecyclerViewPrincipal users = snapshot.getValue(DatosRecyclerViewPrincipal.class);
-                  //  ListaUsuariosPrincipal.add(users);
+
                     String DNI = snapshot.getKey();
-                  //  String nombre = dataSnapshot.child(DNI).child("Nombre").getValue().toString();
                     String nombre = snapshot.child("Nombre").getValue().toString();
                     ListaUsuariosPrincipal.add(new DatosRecyclerViewPrincipal(nombre,DNI,R.drawable.ic_download));
-              //      Toast.makeText(MainActivity.this, "", Toast.LENGTH_SHORT).show();
                 }
 
                 // Notiicamos que se cambiaron los datos del RecyclerView
                 adapter.notifyDataSetChanged();
-
             }
 
             @Override
@@ -395,7 +339,6 @@ public class MainActivity extends AppCompatActivity
         // Vuelvo a llamar a la tarea para que siga escuchando lo que llega por Bluetooth
         if(Bluetooth_Conectado == true && Bluetooth_Encendido == true)
         {
-
             Bluetooth_RX_aux = new AsyncTask_BT_RX(conexionBluetooth);
             Bluetooth_RX_aux.execute();
         }
