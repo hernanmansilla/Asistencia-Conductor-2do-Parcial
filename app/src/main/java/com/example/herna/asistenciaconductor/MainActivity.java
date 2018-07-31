@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity
 
         // Genero el toolbar
         setSupportActionBar(toolbar_MainActivity);
-        getSupportActionBar().setTitle("Asistencia Conductor");
+        getSupportActionBar().setTitle("  S   A   a   C");
 
         // Obtengo una referencia a la base de datos
         dbUsuarios = FirebaseDatabase.getInstance().getReference("Usuarios");
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity
         // Creo la notificacion con sus atributos
         mBuilder = new NotificationCompat.Builder(MainActivity.this);
         mBuilder.setAutoCancel(true);
-        mBuilder.setSmallIcon(R.drawable.icono_camion);
+        mBuilder.setSmallIcon(R.drawable.icono_dormido);
         mBuilder.setTicker("Bluetooth");
         mBuilder.setWhen(System.currentTimeMillis());
         mBuilder.setContentTitle("Bluetooth");

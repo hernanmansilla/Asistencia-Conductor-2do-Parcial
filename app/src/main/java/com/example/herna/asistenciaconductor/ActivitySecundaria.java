@@ -64,7 +64,7 @@ public class ActivitySecundaria extends AppCompatActivity {
 
         // Genero el toolbar
         setSupportActionBar(toolbar_ActivitySecundaria);
-        getSupportActionBar().setTitle("Asistencia Conductor");
+        getSupportActionBar().setTitle("  S   A   a   C");
 
         ListaDesc = new ArrayList<DatosListViewInfracciones>();
 

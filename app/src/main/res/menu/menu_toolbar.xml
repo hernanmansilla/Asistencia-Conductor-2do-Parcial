@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/Icono_Camion"
-        android:icon="@drawable/icono_camion"
-        android:title="Icono_Camion"
+        android:id="@+id/icono_dormido"
+        android:icon="@drawable/icono_dormido"
+        android:title="icono_dormido"
         app:showAsAction="always" />
 
 </menu>

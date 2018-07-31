@@ -10,9 +10,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/icono_camion"
-        android:label="@string/app_name"
-        android:roundIcon="@drawable/icono_camion"
+        android:icon="@drawable/icono_dormido"
+        android:label=" S  A  a  C"
+        android:roundIcon="@drawable/icono_dormido"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
