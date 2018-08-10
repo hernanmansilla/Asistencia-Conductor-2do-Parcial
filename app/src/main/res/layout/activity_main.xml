@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/activity_main"
     tools:context=".MainActivity">
 
     <include
@@ -20,5 +21,10 @@
         android:background="#888888">
 
     </android.support.v7.widget.RecyclerView>
+    
+    <FrameLayout
+        android:id="@+id/contenedor_fragments"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></FrameLayout>
 
 </RelativeLayout>

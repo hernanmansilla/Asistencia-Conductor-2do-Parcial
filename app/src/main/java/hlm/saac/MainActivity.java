@@ -16,15 +16,19 @@ package hlm.saac;
 // Geocerca https://www.mytrendin.com/android-geofences-google-api/
 
 
+import android.app.Activity;
+import android.app.FragmentManager;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,7 +39,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.Toast;
+import android.support.v4.app.Fragment;
 
+import com.google.android.gms.maps.MapFragment;
+//import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -136,14 +144,25 @@ public class MainActivity extends AppCompatActivity
             public void onItemClick(int position)
             {
                 // Obtengo la informacion del item seleccionado
-                DNI_Seleccionado = ListaUsuariosPrincipal.get(position).getDNI();
+         /*       DNI_Seleccionado = ListaUsuariosPrincipal.get(position).getDNI();
 
                 Intent Activity2 = new Intent(MainActivity.this, ActivitySecundaria.class);
 
                 // Le paso los datos del Chofer a la segunda activity para mostrarla
                 finish();
                 Activity2.putExtra("DNI_Seleccionado", DNI_Seleccionado);
-                startActivity(Activity2);
+                startActivity(Activity2);*/
+
+             //   FragmentActivity activity = (FragmentActivity) mContext;
+            //    MapFragmento mapsFragment = new MapFragmento();
+             //   SupportMapFragment manager = (SupportMapFragment)getSupportFragmentManager();
+             //   manager.beginTransaction().replace(R.id.content_frame,new MapFragmento()).commit();
+
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.content_frame
+                                , new MapFragmento())
+                        .addToBackStack("back")
+                        .commit();
             }
 
             // Funcion para atender la presion de algun icono de descarga de los item del RecyclerView
