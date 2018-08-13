@@ -39,7 +39,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.Toast;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 
 import com.google.android.gms.maps.MapFragment;
 //import com.google.android.gms.maps.SupportMapFragment;
@@ -144,25 +145,24 @@ public class MainActivity extends AppCompatActivity
             public void onItemClick(int position)
             {
                 // Obtengo la informacion del item seleccionado
-         /*       DNI_Seleccionado = ListaUsuariosPrincipal.get(position).getDNI();
+           /*     DNI_Seleccionado = ListaUsuariosPrincipal.get(position).getDNI();
 
-                Intent Activity2 = new Intent(MainActivity.this, ActivitySecundaria.class);
-
+                Intent Activity2 = new Intent(MainActivity.this, MapsActivity.class);
                 // Le paso los datos del Chofer a la segunda activity para mostrarla
                 finish();
                 Activity2.putExtra("DNI_Seleccionado", DNI_Seleccionado);
-                startActivity(Activity2);*/
+                startActivity(Activity2);
+*/
+                // Obtengo la informacion del item seleccionado
+                double lat = -36;
+                double longi = -58;
 
-             //   FragmentActivity activity = (FragmentActivity) mContext;
-            //    MapFragmento mapsFragment = new MapFragmento();
-             //   SupportMapFragment manager = (SupportMapFragment)getSupportFragmentManager();
-             //   manager.beginTransaction().replace(R.id.content_frame,new MapFragmento()).commit();
-
-                getSupportFragmentManager().beginTransaction()
-                        .add(R.id.content_frame
-                                , new MapFragmento())
-                        .addToBackStack("back")
-                        .commit();
+                Intent Activity2 = new Intent(MainActivity.this, MapsActivity.class);
+                // Le paso los datos del Chofer a la segunda activity para mostrarla
+                finish();
+                Activity2.putExtra("lat", lat);
+                Activity2.putExtra("longi", longi);
+                startActivity(Activity2);
             }
 
             // Funcion para atender la presion de algun icono de descarga de los item del RecyclerView
